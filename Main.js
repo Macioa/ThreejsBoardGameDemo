@@ -19,15 +19,18 @@ window.addEventListener('resize', function() {
  
 function init() {
     camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
-    camera.position.z = 1;
+    camera.position.z = 5;
  
     scene = new THREE.Scene();
  
-    geometry = new THREE.BoxGeometry( 0.2, 0.2, 0.2 );
-    material = new THREE.MeshNormalMaterial();
+    //geometry = new THREE.BoxGeometry( 0.2, 0.2, 0.2 );
+    //material = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false, skinning: true } );
+	//material = new THREE.MeshNormalMaterial();
  
-    mesh = new THREE.Mesh( geometry, material );
-    scene.add( mesh );
+    //mesh = new THREE.Mesh( geometry, material );
+	
+	//object = new THREE.Object3D();
+    //scene.add( mesh );
  
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -45,10 +48,11 @@ function animate() {
 
 function onMouseDown(event) {
 	event.preventDefault();
+	mesh.translateX(1);
 }
 
 
 
-asdfasdf
+
 
 

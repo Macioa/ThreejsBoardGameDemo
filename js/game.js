@@ -2,17 +2,24 @@ alert("game js reporting in");
 
 class Game {
 	constructor () {}
-	createChess(){
+	buildBoard(sizeX,sizeY){
 		this.board = [];
 		var size = 8;
-		for (var i = 1; i <= size; i++){
-			for (var j = 1; j <= size; j++){
+		
+		//build board
+		for (var i = 0; i <= sizeX+1; i++){
+			for (var j = 0; j <= sizeY+1; j++){
+				if ((i==0)||(j==0)||(i==sizeX+1)||(j==sizeY+1))
+					this.board.push(new Tile(0x003300, new THREE.Vector2(i,j), true));
+				else
 				if ((i+j)%2==0)
 					this.board.push(new Tile(0xffffff, new THREE.Vector2(i,j)));
 				else 
 					this.board.push(new Tile(0x663300, new THREE.Vector2(i,j)));
 			}
 		}
+	
+		
 	}
 }
 
@@ -31,7 +38,7 @@ class Token {
 }
 
 class Tile {
-	constructor(color,position) {
+	constructor(color,position,border = false) {
 		this.color = color;
 		this.position = position;
 		this.n = null;
@@ -44,8 +51,13 @@ class Tile {
 		this.nw = null;
 		this.u = null;
 		this.d = null;
+		this.isOpen = !border;
 		
-		this.geometry = new THREE.BoxGeometry( 1,1,1 );
+		if (!border)
+			this.geometry = new THREE.BoxGeometry( 1,1,1 );
+		else 
+			this.geometry = new THREE.BoxGeometry( 1,1,1.25 );
+		
 		this.material = new THREE.MeshBasicMaterial( { color: color } );
 		
 		this.mesh = new THREE.Mesh( this.geometry, this.material );

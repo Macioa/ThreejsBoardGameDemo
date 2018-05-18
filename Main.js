@@ -4,7 +4,9 @@
 var camera, scene, renderer;
 var geometry, material, mesh;
 var controls;
- 
+var texture, blacktiletexture, whitetiletexture, bordertexture;
+//var blacktilecolor = 0x663300, whitetilecolor = 0xffffff, bordercolor = 0x003300;
+var blacktilecolor = 'black', whitetilecolor = 'white', bordercolor = 'border';
 init();
 animate();
 
@@ -22,15 +24,20 @@ function init() {
     camera.position.z = 5;
  
     scene = new THREE.Scene();
- 
-    //geometry = new THREE.BoxGeometry( 0.2, 0.2, 0.2 );
-    //material = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false, skinning: true } );
-	//material = new THREE.MeshNormalMaterial();
- 
-    //mesh = new THREE.Mesh( geometry, material );
 	
-	//object = new THREE.Object3D();
-    //scene.add( mesh );
+	whitetiletexture = new THREE.TextureLoader().load( "texture/awhite.jpg" );
+	blacktiletexture = new THREE.TextureLoader().load( "texture/ablack.jpg" );
+	bordertexture = new THREE.TextureLoader().load( "texture/bborder.jpg" );
+	/*whitetiletexture = new THREE.CubeTextureLoader()
+			.setPath( 'texture/' )
+			.load( [
+				'awhite.jpg',//px
+				'awhite.jpg',//nx
+				'awhite.jpg',//py
+				'awhite.jpg',//ny
+				'awhite.jpg',//pz
+				'awhite.jpg' //nz
+			] );*/
  
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -38,6 +45,18 @@ function init() {
 	document.addEventListener('dblclick', onMouseDown, false);
 
 	controls = new THREE.OrbitControls( camera, renderer.domElement );
+	//var light = new THREE.HemisphereLight( 1 );
+
+
+	var spotlightA = new THREE.SpotLight( 0xffffff );
+	spotlightA.position.set( 10, 0, 10 );
+	scene.add( spotlightA );
+	
+	var spotlightB = new THREE.SpotLight( 0xffffff );
+	spotlightB.position.set( 0, 10, 10 );
+	scene.add( spotlightB );
+	
+	this.animate();
 }
  
 function animate() { 

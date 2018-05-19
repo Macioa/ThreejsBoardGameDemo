@@ -15,17 +15,18 @@ class Game {
 		for (var i = 0; i <= sizeX+1; i++){
 			for (var j = 0; j <= sizeY+1; j++){
 				if ((i==0)||(j==-0)||(i==sizeX+1)||(j==sizeY+1))
-					this.board.push(new Tile(bordercolor, new THREE.Vector2(i,j), true));
+					this.board.push(new Tile('border', new THREE.Vector2(i,j), true));
 				else
 				if ((i+j)%2==0)
-					this.board.push(new Tile(whitetilecolor, new THREE.Vector2(i,j)));
+					this.board.push(new Tile('white', new THREE.Vector2(i,j)));
 				else 
-					this.board.push(new Tile(blacktilecolor, new THREE.Vector2(i,j)));
+					this.board.push(new Tile('black', new THREE.Vector2(i,j)));
 			}
 		}
 		
 		this.board.forEach(function(tile){
 			tile.translate(new THREE.Vector3(center.x-(sizeX+2)/2, center.y-(sizeY+2)/2, center.z*scale));
+			tile.mesh.rotateZ((Math.PI/2)*(Math.floor(Math.random() * 4)+1));
 		});
 	}
 	
@@ -70,11 +71,12 @@ class Tile {
 			this.material = new THREE.MeshLambertMaterial( { color: color } );
 		else {
 			switch (color) {
-				case 'black': texture = blacktiletexture; break;
-				case 'white': texture = whitetiletexture; break;
-				case 'border': texture = bordertexture; break;
+				case 'black': this.material = blacktilematerial; break;
+				case 'white': this.material = whitetilematerial; break;
+				case 'border': this.material = bordermaterial; break;
 				}
-			this.material = new THREE.MeshLambertMaterial( { map: texture } );
+			//this.material = checkermaterial;
+			//new THREE.MeshLambertMaterial( { map: texture } );
 			}
 		this.mesh = new THREE.Mesh( this.geometry, this.material );
 		

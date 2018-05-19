@@ -4,9 +4,17 @@
 var camera, scene, renderer;
 var geometry, material, mesh;
 var controls;
+
 var texture, blacktiletexture, whitetiletexture, bordertexture;
 //var blacktilecolor = 0x663300, whitetilecolor = 0xffffff, bordercolor = 0x003300;
-var blacktilecolor = 'black', whitetilecolor = 'white', bordercolor = 'border';
+var blacktiletexture = 'black', whitetiletexture = 'white', bordertexture = 'border';
+var checkerbumpmap;
+
+var blacktilematerial, whitetilematerial, bordermaterial, checkermaterial;
+
+var loader = new THREE.STLLoader();
+
+
 init();
 animate();
 
@@ -27,7 +35,16 @@ function init() {
 	
 	whitetiletexture = new THREE.TextureLoader().load( "texture/awhite.jpg" );
 	blacktiletexture = new THREE.TextureLoader().load( "texture/ablack.jpg" );
-	bordertexture = new THREE.TextureLoader().load( "texture/bborder.jpg" );
+	bordertexture = new THREE.TextureLoader().load( "texture/11-seamless-leather-texture.jpg" );
+	checkerbumpmap = new THREE.TextureLoader().load( "texture/bump_map.jpg" );
+
+	whitetilematerial = new THREE.MeshPhongMaterial( { map: whitetiletexture } );
+	blacktilematerial = new THREE.MeshPhongMaterial( { map: blacktiletexture } );
+	bordermaterial = new THREE.MeshPhongMaterial( { map: bordertexture, bumpMap: bordertexture } );
+	//checkerbumpmap.wrapS = THREE.RepeatWrapping;
+	//checkerbumpmap.wrapT = THREE.RepeatWrapping;
+	//checkerbumpmap.repeat.set( 54, 54 );
+	
 	/*whitetiletexture = new THREE.CubeTextureLoader()
 			.setPath( 'texture/' )
 			.load( [
@@ -37,7 +54,25 @@ function init() {
 				'awhite.jpg',//ny
 				'awhite.jpg',//pz
 				'awhite.jpg' //nz
-			] );*/
+			] );*/              // specular: 0x111111, shininess: 0,
+ 
+	material2 = new THREE.MeshPhongMaterial( { color: 0x871511, map: checkerbumpmap } );
+
+	loader.load( './mesh/checker.stl', function ( geometry ) {
+
+		var mesh = new THREE.Mesh( geometry, bordermaterial );
+
+		mesh.position.set( 0, 0, .125 );
+		mesh.rotation.set( Math.PI, 0, 0 );
+		mesh.scale.set( .25/6, .25/6, .25/6 );
+
+		mesh.castShadow = true;
+		mesh.receiveShadow = true;
+
+		scene.add( mesh );
+
+	} );
+ 
  
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );

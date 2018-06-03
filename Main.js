@@ -3,7 +3,7 @@
 
 var camera, scene, renderer;
 var geometry, material, mesh;
-var controls;
+var controls, dragControls, objects = [];
 
 var texture, blacktiletexture, whitetiletexture, bordertexture;
 //var blacktilecolor = 0x663300, whitetilecolor = 0xffffff, bordercolor = 0x003300;
@@ -55,6 +55,7 @@ function init() {
 				'awhite.jpg',//pz
 				'awhite.jpg' //nz
 			] );*/              // specular: 0x111111, shininess: 0,
+
  
 	material2 = new THREE.MeshPhongMaterial( { color: 0x871511, map: checkerbumpmap } );
 
@@ -70,6 +71,7 @@ function init() {
 		mesh.receiveShadow = true;
 
 		scene.add( mesh );
+		objects.push( mesh );
 
 	} );
  
@@ -77,7 +79,11 @@ function init() {
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
-	document.addEventListener('dblclick', onMouseDown, false);
+	//document.addEventListener('dblclick', onMouseDown, false);
+
+	dragControls = new THREE.DragControls( objects, camera, renderer.domElement );
+	dragControls.addEventListener( 'dragstart', function ( event ) { controls.enabled = false; } );
+	dragControls.addEventListener( 'dragend', function ( event ) { controls.enabled = true; } );
 
 	controls = new THREE.OrbitControls( camera, renderer.domElement );
 	//var light = new THREE.HemisphereLight( 1 );
@@ -100,10 +106,10 @@ function animate() {
 	console.log("animating");
 }
 
-function onMouseDown(event) {
+/*function onMouseDown(event) {
 	event.preventDefault();
 	mesh.translateX(1);
-}
+}*/
 
 
 

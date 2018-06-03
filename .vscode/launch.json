@@ -3,10 +3,16 @@
     "configurations": [
 
         {
-            "name": "Launch Untitled-1.html",
+            "name": "Launch in Chrome",
             "type": "chrome",
             "request": "launch",
-            "file": "${workspaceFolder}/Untitled-1.html"
+            "file": "${workspaceFolder}/Main.html"
+        },
+        {
+            "name": "Launch Firefox",
+            "type": "firefox",
+            "request": "launch",
+            "file": "${workspaceFolder}/Main.html"
         }
     ]
 }

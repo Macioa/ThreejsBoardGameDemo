@@ -10,7 +10,7 @@ var texture, blacktiletexture, whitetiletexture, bordertexture;
 var blacktiletexture = 'black', whitetiletexture = 'white', bordertexture = 'border';
 var checkerbumpmap;
 
-var blacktilematerial, whitetilematerial, bordermaterial, checkermaterial;
+var blacktilematerial, whitetilematerial, bordermaterial, checkermaterial, shadMaterial, greenMaterial;
 
 var loader = new THREE.STLLoader();
 
@@ -41,27 +41,27 @@ function init() {
 	whitetilematerial = new THREE.MeshPhongMaterial( { map: whitetiletexture } );
 	blacktilematerial = new THREE.MeshPhongMaterial( { map: blacktiletexture } );
 	bordermaterial = new THREE.MeshPhongMaterial( { map: bordertexture, bumpMap: bordertexture } );
-	//checkerbumpmap.wrapS = THREE.RepeatWrapping;
-	//checkerbumpmap.wrapT = THREE.RepeatWrapping;
-	//checkerbumpmap.repeat.set( 54, 54 );
-	
-	/*whitetiletexture = new THREE.CubeTextureLoader()
-			.setPath( 'texture/' )
-			.load( [
-				'awhite.jpg',//px
-				'awhite.jpg',//nx
-				'awhite.jpg',//py
-				'awhite.jpg',//ny
-				'awhite.jpg',//pz
-				'awhite.jpg' //nz
-			] );*/              // specular: 0x111111, shininess: 0,
+	greenMaterial = new THREE.MeshBasicMaterial( { color: 0x008000 } );
+
+	var shader = THREE.FresnelShader;
+	var uniforms = THREE.UniformsUtils.clone( shader.uniforms );
+
+	uniforms.value = bordermaterial;
+	console.log(uniforms);
+	var shadMaterial = new THREE.ShaderMaterial( {
+		uniforms: uniforms,
+		vertexShader: shader.vertexShader,
+		fragmentShader: shader.fragmentShader
+	} );
+
+
 
  
 	material2 = new THREE.MeshPhongMaterial( { color: 0x871511, map: checkerbumpmap } );
 
 	loader.load( './mesh/checker.stl', function ( geometry ) {
 
-		var mesh = new THREE.Mesh( geometry, bordermaterial );
+		var mesh = new THREE.Mesh( geometry, material2 );
 
 		mesh.position.set( 0, 0, .125 );
 		mesh.rotation.set( Math.PI, 0, 0 );
@@ -103,7 +103,7 @@ function init() {
 function animate() { 
     requestAnimationFrame( animate );
     renderer.render( scene, camera );
-	console.log("animating");
+	//console.log("animating");
 }
 
 /*function onMouseDown(event) {

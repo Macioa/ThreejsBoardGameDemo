@@ -78,7 +78,7 @@ class Tile {
 			//this.material = checkermaterial;
 			//new THREE.MeshLambertMaterial( { map: texture } );
 			}
-		this.mesh = new THREE.Mesh( this.geometry, this.material );
+		this.mesh = new THREE.Mesh( this.geometry, this.material.clone() );
 		
 		scene.add(this.mesh);
 		

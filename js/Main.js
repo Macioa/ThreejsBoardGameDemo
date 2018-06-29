@@ -133,7 +133,10 @@ function rayCast(){
 			INTERSECTED.material.emissive.setHex( 0xff0000 );
 		}
 	} else {
-		if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+		if ( INTERSECTED ) {
+			console.log(INTERSECTED, material);
+			INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+		}
 		INTERSECTED = null;
 	}
 }

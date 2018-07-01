@@ -3,7 +3,7 @@ ThreeJS Board Game
 
 A 3D rendered board game framework utilizing threejs.
 
-![](../../Pictures/BoardGame.png)
+![](BoardGame.png)
 
 MVP
 ---

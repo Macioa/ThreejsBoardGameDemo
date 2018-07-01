@@ -59,7 +59,7 @@ function init() {
 
 
  
-	material2 = new THREE.MeshPhongMaterial( { color: 0x871511, map: checkerbumpmap } );
+	material2 = new THREE.MeshToonMaterial( { color: 0x871511, map: checkerbumpmap } );
 
 	loader.load( './mesh/checker.stl', function ( geometry ) {
 

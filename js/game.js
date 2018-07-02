@@ -9,6 +9,7 @@ class Game {
 		this.players = [];
 		this.activePlayerIndex = 0;
 		this.activePlayer=null;
+		this.selectedToken=null;
 
 		//build players
 		for (let i =0; i<playerNames.length; i++){
@@ -22,7 +23,6 @@ class Game {
 			
 			this.players.push(new Player(playerNames[i], color));
 		}
-		this.startNextPlayerTurn();
 	}
 
 	buildBoard(sizeX, sizeY, center = new THREE.Vector3(0,0,0)){
@@ -93,9 +93,16 @@ class Game {
 			activePlayerIndex++;
 			this.activePlayer=this.players[this.activePlayerIndex];
 		}
+		console.log(`Starting ${this.activePlayer.name}'s turn.`);
+		this.selectToken();
+	}
+	selectToken(){
 		//set selectable objects
 		selectableObjects = [];
 		this.activePlayer.tokens.forEach(token => { selectableObjects.push(token.mesh) });
+		document.addEventListener('click', function(e){
+			console.log('clicked');
+		});
 	}
 	
 }

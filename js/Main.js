@@ -43,7 +43,7 @@ function init() {
 	whitetilematerial = new THREE.MeshPhongMaterial( { map: whitetiletexture } );
 	blacktilematerial = new THREE.MeshPhongMaterial( { map: blacktiletexture } );
 	bordermaterial = new THREE.MeshPhongMaterial( { map: bordertexture, bumpMap: bordertexture } );
-	greenMaterial = new THREE.MeshBasicMaterial( { color: 0x008000 } );
+
 
 //	var shader = THREE.FresnelShader;
 //	var uniforms = THREE.UniformsUtils.clone( shader.uniforms );
@@ -113,33 +113,11 @@ function onDocumentMouseMove( event ) {
  
 function animate() { 
 	requestAnimationFrame( animate );
-	rayCast();
+	rayCast(selectableObjects);
     renderer.render( scene, camera );
 }
 
-function rayCast(){
-	//raycaster for mousehover
 
-	raycaster.setFromCamera( mouse, camera );
-
-	intersects = raycaster.intersectObjects( scene.children );
-
-	if (intersects.length) {
-		if ( INTERSECTED != intersects[ 0 ].object ) {
-			if ( INTERSECTED ) 
-				INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-			INTERSECTED = intersects[ 0 ].object;
-			INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-			INTERSECTED.material.emissive.setHex( 0xff0000 );
-		}
-	} else {
-		if ( INTERSECTED ) {
-			console.log(INTERSECTED, material);
-			INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-		}
-		INTERSECTED = null;
-	}
-}
 
 /*function onMouseDown(event) {
 	event.preventDefault();

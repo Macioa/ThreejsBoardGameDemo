@@ -12,7 +12,7 @@ loader.load( './mesh/CheckerSmall.stl', function ( geometry ) {
 		checkerMesh.receiveShadow = true;
 
 		loadedMeshes.push(checkerMesh);
-		console.log(loadedMeshes);
+		//console.log(loadedMeshes);
 	} );
 
 
@@ -45,6 +45,6 @@ class Checkers extends Game {
 				this.players[0].addToken(newToken);
 			}
 		}
-
+	this.startNextPlayerTurn();
 	}
 }

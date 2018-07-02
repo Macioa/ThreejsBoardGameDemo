@@ -4,7 +4,7 @@
 var raycaster = new THREE.Raycaster(), INTERSECTED, intersects;
 
 var camera, scene, renderer, mouse = new THREE.Vector2();
-var geometry, material, mesh;
+var geometry, material, loadedMeshes=[];
 var controls, dragControls, objects = [];
 
 var texture, blacktiletexture, whitetiletexture, bordertexture;
@@ -49,7 +49,7 @@ function init() {
 	var uniforms = THREE.UniformsUtils.clone( shader.uniforms );
 
 	uniforms.value = bordermaterial;
-	console.log(uniforms);
+
 	var shadMaterial = new THREE.ShaderMaterial( {
 		uniforms: uniforms,
 		vertexShader: shader.vertexShader,
@@ -59,7 +59,7 @@ function init() {
 
 
  
-	material2 = new THREE.MeshToonMaterial( { color: 0x871511, map: checkerbumpmap } );
+	/*material2 = new THREE.MeshToonMaterial( { color: 0x871511, map: checkerbumpmap } );
 
 	loader.load( './mesh/checker.stl', function ( geometry ) {
 
@@ -75,7 +75,7 @@ function init() {
 		scene.add( mesh );
 		objects.push( mesh );
 
-	} );
+	} );*/
  
  
     renderer = new THREE.WebGLRenderer( { antialias: true } );

@@ -7,6 +7,7 @@ class Game {
 		this.board = [];
 		this.pieces = [];
 	}
+
 	buildBoard(sizeX,sizeY, center = new THREE.Vector3(0,0,0)){
 		
 		//build array
@@ -71,15 +72,36 @@ class Player {
 	constructor(name,color){
 		this.name = name;
 		this.color = color;
+		this.tokens = [];
+	}
+	addToken(token){
+		this.tokens.push(token);
 	}
 }
 
 class Token {
-	constructor(startingPosition){
+	constructor(name, player, startingPosition, mesh){
 		this.name = name;
+		this.tile=startingPosition;
+		this.player = player;
 		this.allowedMovement = [];
 		this.position = startingPosition;
+
+		this.mesh = mesh.clone();
+		scene.add(this.mesh);
+		setTimeout(this.moveTo(this.tile),500);
 	}
+	moveTo(tile) {
+		let tilePos = tile.obj.position;
+		let socketPos = tilePos.add(tile.socket.position);
+		let deltaPos = socketPos.add(this.mesh.position.negate());
+		this.mesh.translateX(deltaPos.x);
+		this.mesh.translateY(deltaPos.y);
+		this.mesh.translateZ(deltaPos.z-scale);
+
+		this.tile=tile;
+	}
+
 }
 
 class Tile {
@@ -113,34 +135,26 @@ class Tile {
 			//this.material = checkermaterial;
 			//new THREE.MeshLambertMaterial( { map: texture } );
 			}
+		this.obj = new THREE.Object3D();
 		this.mesh = new THREE.Mesh( this.geometry, this.material.clone() );
-		
-		scene.add(this.mesh);
-		
-		this.mesh.translateX(this.position.x*scale);
-		this.mesh.translateY(this.position.y*scale);
+		this.obj.add(this.mesh);
+		if (!this.isBorder){
+			this.socket = new THREE.Mesh( new THREE.SphereGeometry(.25*scale), );
+			this.obj.add(this.socket);
+			this.socket.translateZ(.5*scale)
+		}
+
+		scene.add(this.obj);
+
+		this.obj.translateX(this.position.x*scale);
+		this.obj.translateY(this.position.y*scale);
 	}
 	
 	translate(vector3){
-		this.mesh.translateX(vector3.x*scale);
-		this.mesh.translateY(vector3.y*scale);
-		this.mesh.translateZ(vector3.z*scale);
+		this.obj.translateX(vector3.x*scale);
+		this.obj.translateY(vector3.y*scale);
+		this.obj.translateZ(vector3.z*scale);
 	}
 }
 
 
-function orderWeight(strng) {
-    var arry = strng.split(" ");
-    arry.sort(function (a, b) {
-      var at=0, bt=0, length = a.length;
-      if (b.length>length)
-        length = b.length; 
-      for(i = 0; i < length; i++){
-        if (a[i])
-          at+=a[i];
-        if (b[i])
-          bt+=b[i];
-        }
-      });
-      return at > bt;
-}

@@ -8,25 +8,29 @@ class Game {
 		this.pieces = [];
 	}
 	buildBoard(sizeX,sizeY, center = new THREE.Vector3(0,0,0)){
-		this.board = [];
-		var size = 8;
 		
+		//build array
+		for (let j = 0; j<=sizeY+1; j++)
+			this.board.push([]);
+
 		//build board
 		for (var i = 0; i <= sizeX+1; i++){
 			for (var j = 0; j <= sizeY+1; j++){
 				if ((i==0)||(j==-0)||(i==sizeX+1)||(j==sizeY+1))
-					this.board.push(new Tile('border', new THREE.Vector2(i,j), true));
+					this.board[i][j] = new Tile('border', new THREE.Vector2(i,j), true);
 				else
 				if ((i+j)%2==0)
-					this.board.push(new Tile('white', new THREE.Vector2(i,j)));
+					this.board[i][j] = new Tile('white', new THREE.Vector2(i,j));
 				else 
-					this.board.push(new Tile('black', new THREE.Vector2(i,j)));
+					this.board[i][j] = new Tile('black', new THREE.Vector2(i,j));
 			}
 		}
 		
-		this.board.forEach(function(tile){
-			tile.translate(new THREE.Vector3(center.x-(sizeX+2)/2, center.y-(sizeY+2)/2, center.z*scale));
-			tile.mesh.rotateZ((Math.PI/2)*(Math.floor(Math.random() * 4)+1));
+		this.board.forEach(function(row){
+			row.forEach(function(tile){
+				tile.translate(new THREE.Vector3(center.x-(sizeX+2)/2, center.y-(sizeY+2)/2, center.z*scale));
+				tile.mesh.rotateZ((Math.PI/2)*(Math.floor(Math.random() * 4)+1));
+			});
 		});
 	}
 	
@@ -42,7 +46,7 @@ class Player {
 class Token {
 	constructor(startingPosition){
 		this.name = name;
-		this.allowedMovement = allowedMovement;
+		this.allowedMovement = [];
 		this.position = startingPosition;
 	}
 }

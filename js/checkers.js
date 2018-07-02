@@ -1,8 +1,9 @@
 
 	material2 = new THREE.MeshToonMaterial( { color: 0x871511, map: checkerbumpmap } );
-	loader.load( './mesh/CheckerSmall.stl', function ( geometry ) {
 
-		checkerMesh = new THREE.Mesh( geometry, material2 );
+loader.load( './mesh/CheckerSmall.stl', function ( geometry ) {
+		let checkmaterial = new THREE.MeshToonMaterial( { color: 0x871511, map: checkerbumpmap } );
+		let checkerMesh = new THREE.Mesh( geometry, checkmaterial );
 		checkerMesh.position.set( 0, 0, .125 );
 		checkerMesh.rotation.set( Math.PI, 0, 0 );
 		checkerMesh.scale.set( .25/6, .25/6, .25/6 );
@@ -11,6 +12,7 @@
 		checkerMesh.receiveShadow = true;
 
 		loadedMeshes.push(checkerMesh);
+		console.log(loadedMeshes);
 	} );
 
 
@@ -22,21 +24,16 @@ class Checker extends Token {
 			['ne','ne']
 		];
 	}
-
 }
 
 class Checkers extends Game {
-	constructor(){
-		super();
-		this.numPlayers = 2;
-		this.players = [];
+	constructor(players){
+		super(players);
+		//name game
+		this.game = "Checkers";
+
 		//build board
 		this.buildBoard(8,8);
-		//build players
-		for (let i =0; i<this.numPlayers; i++){
-			this.players.push(new Player('Steve', '0x871511'))
-		}
-
 
 		//build pieces
 		for (let i =1; i<=3; i++){

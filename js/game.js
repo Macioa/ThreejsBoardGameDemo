@@ -3,12 +3,29 @@ alert("game js reporting in");
 var scale = .25;
 
 class Game {
-	constructor () {
+	constructor (playerNames) {
 		this.board = [];
-		this.pieces = [];
+		this.tokens = [];
+		this.players = [];
+		this.activePlayerIndex = 0;
+		this.activePlayer=null;
+
+		//build players
+		for (let i =0; i<playerNames.length; i++){
+			let color = null;
+			switch (i){
+				case 0: color = '#a31f01'; break;
+				case 1: color = '#161616'; break;
+				case 2: color = '#0145b2'; break;
+				case 3: color = '#b28e01'; break;
+			}
+			
+			this.players.push(new Player(playerNames[i], color));
+		}
+		this.startNextPlayerTurn();
 	}
 
-	buildBoard(sizeX,sizeY, center = new THREE.Vector3(0,0,0)){
+	buildBoard(sizeX, sizeY, center = new THREE.Vector3(0,0,0)){
 		
 		//build array
 		for (let j = 0; j<=sizeY+1; j++)
@@ -19,7 +36,7 @@ class Game {
 			for (var j = 0; j <= sizeY+1; j++){
 				let color = null;
 				let isBorder = false;
-				if ((i==0)||(j==-0)||(i==sizeX+1)||(j==sizeY+1)){
+				if ( (i==0)  ||  (j==-0)  ||  (i==sizeX+1)  ||  (j==sizeY+1) ){
 					color = 'border'; 
 					isBorder = true;
 				}
@@ -65,6 +82,21 @@ class Game {
 			});
 		});
 	}
+
+	startNextPlayerTurn(){
+		//set active player
+		if ( (!this.activePlayer)  ||  (this.activePlayerIndex>=this.players.length) ){
+			this.activePlayer=this.players[0];
+			this.activePlayerIndex=0;
+		}
+		else {
+			activePlayerIndex++;
+			this.activePlayer=this.players[this.activePlayerIndex];
+		}
+		//set selectable objects
+		selectableObjects = [];
+		this.activePlayer.tokens.forEach(token => { selectableObjects.push(token.mesh) });
+	}
 	
 }
 
@@ -74,6 +106,7 @@ class Player {
 		this.color = color;
 		this.tokens = [];
 	}
+
 	addToken(token){
 		this.tokens.push(token);
 	}
@@ -82,15 +115,17 @@ class Player {
 class Token {
 	constructor(name, player, startingPosition, mesh){
 		this.name = name;
-		this.tile=startingPosition;
+		this.tile = startingPosition;
 		this.player = player;
 		this.allowedMovement = [];
 		this.position = startingPosition;
 
 		this.mesh = mesh.clone();
+		this.mesh.material = new THREE.MeshLambertMaterial( { color: this.player.color, map: checkerbumpmap } );
 		scene.add(this.mesh);
 		setTimeout(this.moveTo(this.tile),500);
 	}
+
 	moveTo(tile) {
 		let tilePos = tile.obj.position;
 		let socketPos = tilePos.add(tile.socket.position);

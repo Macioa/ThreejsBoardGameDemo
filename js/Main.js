@@ -5,7 +5,7 @@ var raycaster = new THREE.Raycaster(), INTERSECTED, intersects;
 
 var camera, scene, renderer, mouse = new THREE.Vector2();
 var geometry, material, loadedMeshes=[];
-var controls, dragControls, objects = [];
+var controls, dragControls, selectableObjects = [];
 
 var texture, blacktiletexture, whitetiletexture, bordertexture;
 //var blacktilecolor = 0x663300, whitetilecolor = 0xffffff, bordercolor = 0x003300;
@@ -45,23 +45,23 @@ function init() {
 	bordermaterial = new THREE.MeshPhongMaterial( { map: bordertexture, bumpMap: bordertexture } );
 	greenMaterial = new THREE.MeshBasicMaterial( { color: 0x008000 } );
 
-	var shader = THREE.FresnelShader;
-	var uniforms = THREE.UniformsUtils.clone( shader.uniforms );
+//	var shader = THREE.FresnelShader;
+//	var uniforms = THREE.UniformsUtils.clone( shader.uniforms );
 
-	uniforms.value = bordermaterial;
+//	uniforms.value = bordermaterial;
 
-	var shadMaterial = new THREE.ShaderMaterial( {
+/*	var shadMaterial = new THREE.ShaderMaterial( {
 		uniforms: uniforms,
 		vertexShader: shader.vertexShader,
 		fragmentShader: shader.fragmentShader
-	} );
+	} ); */
 
 
 
  
-	/*material2 = new THREE.MeshToonMaterial( { color: 0x871511, map: checkerbumpmap } );
+//	material2 = new THREE.MeshToonMaterial( { color: 0x871511, map: checkerbumpmap } );
 
-	loader.load( './mesh/checker.stl', function ( geometry ) {
+/*	loader.load( './mesh/checker.stl', function ( geometry ) {
 
 		var mesh = new THREE.Mesh( geometry, material2 );
 
@@ -83,9 +83,9 @@ function init() {
     document.body.appendChild( renderer.domElement );
 	//document.addEventListener('dblclick', onMouseDown, false);
 
-	dragControls = new THREE.DragControls( objects, camera, renderer.domElement );
-	dragControls.addEventListener( 'dragstart', function ( event ) { controls.enabled = false; } );
-	dragControls.addEventListener( 'dragend', function ( event ) { controls.enabled = true; } );
+	//dragControls = new THREE.DragControls( objects, camera, renderer.domElement );
+	//dragControls.addEventListener( 'dragstart', function ( event ) { controls.enabled = false; } );
+	//dragControls.addEventListener( 'dragend', function ( event ) { controls.enabled = true; } );
 
 	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 

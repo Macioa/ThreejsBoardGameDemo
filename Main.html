@@ -21,17 +21,15 @@
 		<script src="js/FresnelShader.js"></script>
 
 
-
 		<script src="js/Main.js"></script>
 		<script src="js/game.js"></script>
 		<script src="js/checkers.js"></script>
+
 		<script>
-		console.log(loadedMeshes)
-		setTimeout(function(){myGame = new Checkers();},2000);
-		setTimeout(function(){
-			console.log('delayed');
-			console.log(loadedMeshes);
-		},15000);
+
+		setTimeout(function(){myGame = new Checkers(["Bob","Steve"]);},2000);
+		setTimeout(function(){console.log(loadedMeshes)},5000);
+
 		</script>
 		</div>
 	</body>

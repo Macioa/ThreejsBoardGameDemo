@@ -16,15 +16,46 @@ class Game {
 		//build board
 		for (var i = 0; i <= sizeX+1; i++){
 			for (var j = 0; j <= sizeY+1; j++){
-				if ((i==0)||(j==-0)||(i==sizeX+1)||(j==sizeY+1))
-					this.board[i][j] = new Tile('border', new THREE.Vector2(i,j), true);
+				let color = null;
+				let isBorder = false;
+				if ((i==0)||(j==-0)||(i==sizeX+1)||(j==sizeY+1)){
+					color = 'border'; 
+					isBorder = true;
+				}
 				else
 				if ((i+j)%2==0)
-					this.board[i][j] = new Tile('white', new THREE.Vector2(i,j));
+					color = 'white';
 				else 
-					this.board[i][j] = new Tile('black', new THREE.Vector2(i,j));
+					color = 'black';
+
+				this.board[i][j] = new Tile(color, new THREE.Vector2(i,j), isBorder);
+				}
 			}
-		}
+
+		//assign neighbors by reference to object, excluding border tiles
+		for (var i = 1; i <= sizeX; i++){
+				for (var j = 1; j <= sizeY; j++){
+					if (i>1){
+						this.board[i][j].w=this.board[i-1][j];
+							if (j>1)
+								this.board[i][j].sw=this.board[i-1][j-1];
+							if (j<sizeY)
+								this.board[i][j].nw=this.board[i-1][j+1];
+					}
+					if (i<sizeX){
+						this.board[i][j].e=this.board[i+1][j];
+						if (j>1)
+							this.board[i][j].se=this.board[i+1][j-1];
+						if (j<sizeY)
+							this.board[i][j].ne=this.board[i+1][j+1];
+					}
+					if (j>1)
+						this.board[i][j].s=this.board[i][j-1];
+					if (j<sizeY)
+						this.board[i][j].n=this.board[i][j+1];
+				}
+			}					
+		
 		
 		this.board.forEach(function(row){
 			row.forEach(function(tile){

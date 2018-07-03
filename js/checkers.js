@@ -19,7 +19,7 @@ loader.load( './mesh/CheckerSmall.stl', function ( geometry ) {
 class Checker extends Token {
 	constructor(player, startingTile, mesh) {
 		super("checker", player, startingTile, mesh);
-		this.allowedMovement = [
+		this.defaultAllowedMovement = [
 			['nw','nw'],
 			['ne','ne']
 		];

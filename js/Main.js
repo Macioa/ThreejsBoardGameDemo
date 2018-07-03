@@ -1,7 +1,7 @@
 //js/three.min.js
 //js/OrbitControls.js
 
-var raycaster = new THREE.Raycaster(), INTERSECTED, intersects;
+var raycaster = new THREE.Raycaster(), INTERSECTED, intersects, selected;
 
 var camera, scene, renderer, mouse = new THREE.Vector2();
 var geometry, material, loadedMeshes=[];
@@ -12,7 +12,7 @@ var texture, blacktiletexture, whitetiletexture, bordertexture;
 var blacktiletexture = 'black', whitetiletexture = 'white', bordertexture = 'border';
 var checkerbumpmap;
 
-var blacktilematerial, whitetilematerial, bordermaterial, checkermaterial, shadMaterial, greenMaterial;
+var blacktilematerial, whitetilematerial, bordermaterial, checkermaterial;
 
 var loader = new THREE.STLLoader();
 
@@ -114,6 +114,7 @@ function onDocumentMouseMove( event ) {
 function animate() { 
 	requestAnimationFrame( animate );
 	rayCast(selectableObjects);
+	//console.log('selected',selected);
     renderer.render( scene, camera );
 }
 

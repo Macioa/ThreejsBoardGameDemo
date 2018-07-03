@@ -1,6 +1,20 @@
 alert("game js reporting in");
 
 var scale = .25;
+const tokenListener = () => {
+	if (INTERSECTED){
+		gameInstance.selectTile(INTERSECTED);
+		gameInstance.selectedToken = INTERSECTED;
+	}
+
+}
+const tileListener = () => {
+	if (INTERSECTED){
+		if (INTERSECTED==gameInstance.selectToken.tile.socket)
+			gameInstance.selectToken();
+		else gameInstance.startNextPlayerTurn();
+	}
+}
 
 class Game {
 	constructor (playerNames) {
@@ -13,15 +27,23 @@ class Game {
 
 		//build players
 		for (let i =0; i<playerNames.length; i++){
-			let color = null;
+			let color = null; let direction = null;
 			switch (i){
-				case 0: color = '#a31f01'; break;
-				case 1: color = '#161616'; break;
-				case 2: color = '#0145b2'; break;
-				case 3: color = '#b28e01'; break;
+				case 0: color = '#a31f01'; 
+						direction = (0,1);
+						break;
+				case 1: color = '#161616'; 
+						direction = (0,-1);
+						break;
+				case 2: color = '#0145b2';
+						direction = (1,0);
+						break;
+				case 3: color = '#b28e01'; 
+						direction = (-1,0);
+						break;
 			}
 			
-			this.players.push(new Player(playerNames[i], color));
+			this.players.push(new Player(playerNames[i], color, direction));
 		}
 	}
 
@@ -96,26 +118,52 @@ class Game {
 		console.log(`Starting ${this.activePlayer.name}'s turn.`);
 		this.selectToken();
 	}
+
 	selectToken(){
 		//set selectable objects
 		selectableObjects = [];
 		this.activePlayer.tokens.forEach(token => { selectableObjects.push(token.mesh) });
-		document.addEventListener('click', function(e){
-			console.log('clicked');
-		});
+		//set event listeners
+		document.removeEventListener('click', tileListener);
+		document.addEventListener('click', tokenListener);
 	}
 	
+	selectTile(fromTile){
+		document.removeEventListener('click', tokenListener);
+		this.removeLine = fromTile;
+	}
 }
 
 class Player {
-	constructor(name,color){
+	constructor(name,color, playerDirection){
 		this.name = name;
 		this.color = color;
 		this.tokens = [];
+		this.playerDirection = playerDirection;
 	}
 
 	addToken(token){
 		this.tokens.push(token);
+	}
+
+	rotateAvailableMovementByHalfPi(AvailableMovementArray){
+		let fullArray = [];
+		AvailableMovementArray.forEach(function (movementArray){
+			let subArray = []
+			movementArray.forEach(function(move){
+				switch (move){
+					case 'n':  subArray.push('e'); break;
+					case 'ne':  subArray.push('se'); break;
+					case 'e':  subArray.push('s'); break;
+					case 'se':  subArray.push('sw'); break;
+					case 's':  subArray.push('w'); break;
+					case 'sw':  subArray.push('nw'); break;
+					case 'w':  subArray.push('n'); break;
+					case 'nw':  subArray.push('ne'); break;
+				}
+			});
+			fullArray.push(subArray);
+		});
 	}
 }
 
@@ -124,7 +172,8 @@ class Token {
 		this.name = name;
 		this.tile = startingPosition;
 		this.player = player;
-		this.allowedMovement = [];
+		this.defaultAllowedMovement = [];
+		this.allowedMovement = this.defaultAlloweMovement;
 		this.position = startingPosition;
 
 		this.mesh = mesh.clone();
@@ -142,6 +191,11 @@ class Token {
 		this.mesh.translateZ(deltaPos.z-scale);
 
 		this.tile=tile;
+	}
+	
+	getAvailableMoves(){
+		let tiles = [];
+
 	}
 
 }

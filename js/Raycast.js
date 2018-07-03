@@ -6,18 +6,18 @@ function rayCast(filteredObjects){
 	intersects = raycaster.intersectObjects( filteredObjects );
 
 	if (intersects.length) {
-		if ( intersected != intersects[ 0 ].object ) {
-			if ( intersected ) 
-				intersected.material.emissive.setHex( intersected.currentHex );
-			intersected = intersects[ 0 ].object;
-			intersected.currentHex = intersected.material.emissive.getHex();
-			intersected.material.emissive.setHex( 0xff0000 );
+		if ( INTERSECTED != intersects[ 0 ].object ) {
+			if ( INTERSECTED ) 
+				INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+			INTERSECTED = intersects[ 0 ].object;
+			INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+			INTERSECTED.material.emissive.setHex( 0xbeff6b );
+			selected = INTERSECTED;
 		}
 	} else {
-		if ( intersected ) {
-			console.log(intersected, material);
-			intersected.material.emissive.setHex( intersected.currentHex );
+		if ( INTERSECTED ) {
+			INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
 		}
-		intersected = null;
+		INTERSECTED = null;
 	}
 }

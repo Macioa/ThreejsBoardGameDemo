@@ -35,9 +35,9 @@ function init() {
  
     scene = new THREE.Scene();
 	
-	whitetiletexture = new THREE.TextureLoader().load( "texture/awhite.jpg" );
-	blacktiletexture = new THREE.TextureLoader().load( "texture/ablack.jpg" );
-	bordertexture = new THREE.TextureLoader().load( "texture/11-seamless-leather-texture.jpg" );
+	whitetiletexture = new THREE.TextureLoader().load( "texture/awhite.png" );
+	blacktiletexture = new THREE.TextureLoader().load( "texture/ablack.png" );
+	bordertexture = new THREE.TextureLoader().load( "texture/11-seamless-leather-texture.png" );
 	checkerbumpmap = new THREE.TextureLoader().load( "texture/bump_map.jpg" );
 
 	whitetilematerial = new THREE.MeshPhongMaterial( { map: whitetiletexture } );

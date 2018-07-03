@@ -47,11 +47,11 @@ class Checkers extends Game {
 		}
 	this.players[0].tokens[0].mesh.material.emissive.setHex(0x1f52a5);
 	this.players[0].tokens[0].tile.mesh.material.emissive.setHex(0x1f52a5);
-	this.players[0].tokens[0].tile.e.mesh.material.emissive.setHex(0xd409ef);
+	//this.players[0].tokens[0].tile.e.mesh.material.emissive.setHex(0xd409ef);
 	console.log('asdf')
 	console.log(this.players[0].tokens[0].tile.e);
 	console.log('asdf');
-	this.players[0].tokens[0].moveTo(this.players[0].tokens[0].tile.e);
+	this.players[0].tokens[0].moveTo(this.players[0].tokens[0].tile.e, 0xd409ef);
 	this.startNextPlayerTurn();
 	}
 }

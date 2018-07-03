@@ -182,15 +182,27 @@ class Token {
 		setTimeout(this.moveTo(this.tile),500);
 	}
 
-	moveTo(tile) {
-		let tilePos = tile.obj.position;
-		let socketPos = tilePos.add(tile.socket.position);
-		let deltaPos = socketPos.add(this.mesh.position.negate());
+	moveTo(tile, color = null) {
+		let tilePos = new THREE.Vector3(tile.obj.position.x,tile.obj.position.y,tile.obj.position.z);
+		let socketPos = new THREE.Vector3(tile.socket.position.x,tile.socket.position.y,tile.socket.position.z);
+		let tokenPos = new THREE.Vector3(this.mesh.position.x,this.mesh.position.y,this.mesh.position.z);
+		let placementPos = tilePos.add(socketPos);
+		let deltaPos = placementPos.add(tokenPos.negate());
 		this.mesh.translateX(deltaPos.x);
 		this.mesh.translateY(deltaPos.y);
-		this.mesh.translateZ(deltaPos.z-scale);
-		console.log('moving');
+		this.mesh.translateZ(deltaPos.z);
+		console.log('moving from');
+		console.log(this.mesh.position);
+		console.log('moving by');
+		console.log(deltaPos);
+
 		this.tile=tile;
+		if (color)
+			this.tile.mesh.material.emissive.setHex(color);
+
+		console.log('result: tile, token');
+		console.log(this.tile.obj.position);
+		console.log(this.mesh.position)
 	}
 
 	rotateAvailableMovement(){

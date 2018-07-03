@@ -4,7 +4,7 @@
 loader.load( './mesh/CheckerSmall.stl', function ( geometry ) {
 		let checkmaterial = new THREE.MeshToonMaterial( { color: 0x871511, map: checkerbumpmap } );
 		let checkerMesh = new THREE.Mesh( geometry, checkmaterial );
-		checkerMesh.position.set( 0, 0, .125 );
+		checkerMesh.position.set( 0, 0, 0 );
 		checkerMesh.rotation.set( Math.PI, 0, 0 );
 		checkerMesh.scale.set( .25/6, .25/6, .25/6 );
 

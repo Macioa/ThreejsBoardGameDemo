@@ -176,8 +176,10 @@ class Token {
 		this.allowedMovement = this.defaultAlloweMovement;
 		this.position = startingPosition;
 
-		this.mesh = mesh.clone();
+		this.mesh = new THREE.Object3D();
+		let displayMesh = mesh.clone();
 		this.mesh.material = new THREE.MeshLambertMaterial( { color: this.player.color, map: checkerbumpmap } );
+		this.mesh.add(displayMesh);
 		scene.add(this.mesh);
 		setTimeout(this.moveTo(this.tile),500);
 	}
@@ -191,20 +193,22 @@ class Token {
 		this.mesh.translateX(deltaPos.x);
 		this.mesh.translateY(deltaPos.y);
 		this.mesh.translateZ(deltaPos.z);
-		console.log('moving from');
+		/*console.log('moving from');
 		console.log(this.mesh.position);
+		console.log('moving to');
+		console.log(tile.obj.position);
 		console.log('moving by');
-		console.log(deltaPos);
+		console.log(deltaPos);*/
 
 		this.tile=tile;
 		if (color)
 			this.tile.mesh.material.emissive.setHex(color);
 
-		console.log('result: tile, token');
+		/*console.log('result: tile, token');
 		console.log(this.tile.obj.position);
-		console.log(this.mesh.position)
+		console.log(this.mesh.position)*/
 	}
-
+/*
 	rotateAvailableMovement(){
 		let rotations = 0;
 		switch(this.player.playerDirection){
@@ -224,13 +228,13 @@ class Token {
 			let subArray = []
 			movementArray.forEach(function(move){
 				switch (move){
-					case 'n':  subArray.push('e'); break;
+					case 'n':   subArray.push('e'); break;
 					case 'ne':  subArray.push('se'); break;
-					case 'e':  subArray.push('s'); break;
+					case 'e':   subArray.push('s'); break;
 					case 'se':  subArray.push('sw'); break;
-					case 's':  subArray.push('w'); break;
+					case 's':   subArray.push('w'); break;
 					case 'sw':  subArray.push('nw'); break;
-					case 'w':  subArray.push('n'); break;
+					case 'w':   subArray.push('n'); break;
 					case 'nw':  subArray.push('ne'); break;
 				}
 			});
@@ -238,7 +242,7 @@ class Token {
 		});
 		return fullArray;
 	}
-	
+	*/
 	getAvailableMoves(){
 		let tiles = [];
 

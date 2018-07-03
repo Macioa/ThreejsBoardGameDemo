@@ -81,3 +81,17 @@ provide the best experience across multiple devices.
 
 It should be easy to implement new games within the framework. Ideally chess and
 checkers will be included as part of the MVP.
+
+ 
+
+ 
+
+ 
+
+ 
+
+Notes
+-----
+
+-   Meshes and textures are not loading in chrome. Need to figure out why. Works
+    fine in Firefox and Edge.

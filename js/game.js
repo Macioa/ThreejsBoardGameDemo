@@ -60,7 +60,7 @@ class Game {
 
 	buildBoard(sizeX, sizeY, center = new THREE.Vector3(0,0,0)){
 		
-		//build array
+		//intialize board array
 		for (let j = 0; j<=sizeY+1; j++)
 			this.board.push([]);
 
@@ -313,7 +313,8 @@ class Tile {
 			//create sphere mesh for socket
 			this.socketMaterial = new THREE.MeshBasicMaterial({color: 0xe5ef2b});
 			this.socket = new THREE.Mesh( new THREE.SphereGeometry(.25*scale), this.socketMaterial );
-			this.socketMaterial.opacity=0;
+			this.socketMaterial.transparent=true;
+			this.socketMaterial.opacity=0.0;
 			//add socket to parent Object3D
 			this.obj.add(this.socket);
 			//raise socket to top of tile

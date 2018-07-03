@@ -1,6 +1,6 @@
 
 	
-
+let loader = new THREE.STLLoader();
 loader.load( './mesh/CheckerSmall.stl', function ( geometry ) {
 		//load checker geometry from file and store to global cache
 		let checkerGeometry = new THREE.Geometry().fromBufferGeometry(geometry);

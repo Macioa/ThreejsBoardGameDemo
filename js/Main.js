@@ -6,7 +6,8 @@ var raycaster = new THREE.Raycaster(), INTERSECTED, intersects;
 var camera, scene, renderer, mouse = new THREE.Vector2();
 
 var loadedMeshes=[];
-var controls, dragControls, selectableObjects = [];
+//var controls, dragControls, 
+var selectableObjects = [];
 
 var blacktiletexture, whitetiletexture, bordertexture;
 
@@ -15,7 +16,7 @@ var blacktiletexture = 'black', whitetiletexture = 'white', bordertexture = 'bor
 
 var blacktilematerial, whitetilematerial, bordermaterial;
 
-var loader = new THREE.STLLoader();
+//var loader = new THREE.STLLoader();
 
 
 init();
@@ -50,13 +51,13 @@ function init() {
     document.body.appendChild( renderer.domElement );
 
 
-	//dragControls = new THREE.DragControls( objects, camera, renderer.domElement );
+	//let dragControls = new THREE.DragControls( objects, camera, renderer.domElement );
 	//dragControls.addEventListener( 'dragstart', function ( event ) { controls.enabled = false; } );
 	//dragControls.addEventListener( 'dragend', function ( event ) { controls.enabled = true; } );
 
 	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 
-	//controls = new THREE.OrbitControls( camera, renderer.domElement );
+	let controls = new THREE.OrbitControls( camera, renderer.domElement );
 
 	var spotlightA = new THREE.SpotLight( 0xffffff );
 	spotlightA.position.set( 10, 0, 10 );

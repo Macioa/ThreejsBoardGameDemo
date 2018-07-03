@@ -1,18 +1,19 @@
 //js/three.min.js
 //js/OrbitControls.js
 
-var raycaster = new THREE.Raycaster(), INTERSECTED, intersects, selected;
+var raycaster = new THREE.Raycaster(), INTERSECTED, intersects;
 
 var camera, scene, renderer, mouse = new THREE.Vector2();
-var geometry, material, loadedMeshes=[];
+
+var loadedMeshes=[];
 var controls, dragControls, selectableObjects = [];
 
-var texture, blacktiletexture, whitetiletexture, bordertexture;
-//var blacktilecolor = 0x663300, whitetilecolor = 0xffffff, bordercolor = 0x003300;
-var blacktiletexture = 'black', whitetiletexture = 'white', bordertexture = 'border';
-var checkerbumpmap;
+var blacktiletexture, whitetiletexture, bordertexture;
 
-var blacktilematerial, whitetilematerial, bordermaterial, checkermaterial;
+var blacktiletexture = 'black', whitetiletexture = 'white', bordertexture = 'border';
+
+
+var blacktilematerial, whitetilematerial, bordermaterial;
 
 var loader = new THREE.STLLoader();
 
@@ -38,50 +39,16 @@ function init() {
 	whitetiletexture = new THREE.TextureLoader().load( "texture/awhite.png" );
 	blacktiletexture = new THREE.TextureLoader().load( "texture/ablack.png" );
 	bordertexture = new THREE.TextureLoader().load( "texture/11-seamless-leather-texture.png" );
-	checkerbumpmap = new THREE.TextureLoader().load( "texture/bump_map.jpg" );
+
 
 	whitetilematerial = new THREE.MeshPhongMaterial( { map: whitetiletexture } );
 	blacktilematerial = new THREE.MeshPhongMaterial( { map: blacktiletexture } );
 	bordermaterial = new THREE.MeshPhongMaterial( { map: bordertexture, bumpMap: bordertexture } );
-
-
-//	var shader = THREE.FresnelShader;
-//	var uniforms = THREE.UniformsUtils.clone( shader.uniforms );
-
-//	uniforms.value = bordermaterial;
-
-/*	var shadMaterial = new THREE.ShaderMaterial( {
-		uniforms: uniforms,
-		vertexShader: shader.vertexShader,
-		fragmentShader: shader.fragmentShader
-	} ); */
-
-
-
- 
-//	material2 = new THREE.MeshToonMaterial( { color: 0x871511, map: checkerbumpmap } );
-
-/*	loader.load( './mesh/checker.stl', function ( geometry ) {
-
-		var mesh = new THREE.Mesh( geometry, material2 );
-
-		mesh.position.set( 0, 0, .125 );
-		mesh.rotation.set( Math.PI, 0, 0 );
-		mesh.scale.set( .25/6, .25/6, .25/6 );
-
-		mesh.castShadow = true;
-		mesh.receiveShadow = true;
-
-		scene.add( mesh );
-		objects.push( mesh );
-
-	} );*/
- 
  
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
-	//document.addEventListener('dblclick', onMouseDown, false);
+
 
 	//dragControls = new THREE.DragControls( objects, camera, renderer.domElement );
 	//dragControls.addEventListener( 'dragstart', function ( event ) { controls.enabled = false; } );
@@ -89,9 +56,7 @@ function init() {
 
 	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 
-	controls = new THREE.OrbitControls( camera, renderer.domElement );
-	//var light = new THREE.HemisphereLight( 1 );
-
+	//controls = new THREE.OrbitControls( camera, renderer.domElement );
 
 	var spotlightA = new THREE.SpotLight( 0xffffff );
 	spotlightA.position.set( 10, 0, 10 );
@@ -104,6 +69,9 @@ function init() {
 	this.animate();
 }
 
+
+
+
 function onDocumentMouseMove( event ) {
 	event.preventDefault();
 
@@ -111,19 +79,14 @@ function onDocumentMouseMove( event ) {
 	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 }
  
+
+
+
 function animate() { 
 	requestAnimationFrame( animate );
 	rayCast(selectableObjects);
-	//console.log('selected',selected);
     renderer.render( scene, camera );
 }
-
-
-
-/*function onMouseDown(event) {
-	event.preventDefault();
-	mesh.translateX(1);
-}*/
 
 
 

@@ -1,8 +1,8 @@
 function rayCast(filteredObjects){
-	//raycaster for mousehover
-	//console.log(filteredObjects);
+	//standard raycaster
 	raycaster.setFromCamera( mouse, camera );
 
+	//run raycaster - only subset of filteredObjects is returned.
 	intersects = raycaster.intersectObjects( filteredObjects );
 
 	if (intersects.length) {
@@ -13,7 +13,6 @@ function rayCast(filteredObjects){
 			INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
 			INTERSECTED.material.emissive.setHex( 0xbeff6b );
 			INTERSECTED.material.emissiveIntensity=.3;
-			selected = INTERSECTED;
 		}
 	} else {
 		if ( INTERSECTED ) {

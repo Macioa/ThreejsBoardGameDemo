@@ -1,13 +1,19 @@
-alert("game js reporting in");
 
+//Global scale. Objects too large or too distant are not rendered in threejs scene. Scaling them down prevents clipping. 
 var scale = .25;
+
+
+//listener for token selection
 const tokenListener = () => {
 	if (INTERSECTED){
 		gameInstance.selectTile(INTERSECTED);
 		gameInstance.selectedToken = INTERSECTED;
+		console.log(INTERSECTED);
 	}
 
 }
+
+//listener for tile selection
 const tileListener = () => {
 	if (INTERSECTED){
 		if (INTERSECTED==gameInstance.selectToken.tile.socket)
@@ -16,8 +22,13 @@ const tileListener = () => {
 	}
 }
 
+
+
+
+
 class Game {
 	constructor (playerNames) {
+		//initialize default values
 		this.board = [];
 		this.tokens = [];
 		this.players = [];
@@ -96,7 +107,7 @@ class Game {
 				}
 			}					
 		
-		
+		//move tiles into position and rotate to add randomness to tile texture
 		this.board.forEach(function(row){
 			row.forEach(function(tile){
 				tile.translate(new THREE.Vector3(center.x-(sizeX+2)/2, center.y-(sizeY+2)/2, center.z*scale));
@@ -115,6 +126,7 @@ class Game {
 			activePlayerIndex++;
 			this.activePlayer=this.players[this.activePlayerIndex];
 		}
+		//let active player select a token to move
 		console.log(`Starting ${this.activePlayer.name}'s turn.`);
 		this.selectToken();
 	}
@@ -122,7 +134,8 @@ class Game {
 	selectToken(){
 		//set selectable objects
 		selectableObjects = [];
-		this.activePlayer.tokens.forEach(token => { selectableObjects.push(token.mesh) });
+		this.activePlayer.tokens.forEach(token => { selectableObjects.push(token.displayMesh) });
+
 		//set event listeners
 		document.removeEventListener('click', tileListener);
 		document.addEventListener('click', tokenListener);
@@ -136,6 +149,7 @@ class Game {
 
 class Player {
 	constructor(name,color, playerDirection){
+		//set default player values
 		this.name = name;
 		this.color = color;
 		this.tokens = [];
@@ -143,32 +157,18 @@ class Player {
 	}
 
 	addToken(token){
+		//add a new token to player's inventory
 		this.tokens.push(token);
-	}
-
-	rotateAvailableMovementByHalfPi(AvailableMovementArray){
-		let fullArray = [];
-		AvailableMovementArray.forEach(function (movementArray){
-			let subArray = []
-			movementArray.forEach(function(move){
-				switch (move){
-					case 'n':  subArray.push('e'); break;
-					case 'ne':  subArray.push('se'); break;
-					case 'e':  subArray.push('s'); break;
-					case 'se':  subArray.push('sw'); break;
-					case 's':  subArray.push('w'); break;
-					case 'sw':  subArray.push('nw'); break;
-					case 'w':  subArray.push('n'); break;
-					case 'nw':  subArray.push('ne'); break;
-				}
-			});
-			fullArray.push(subArray);
-		});
 	}
 }
 
+
+
+
+
 class Token {
-	constructor(name, player, startingPosition, mesh){
+	constructor(name, player, startingPosition, geometry){
+		//set default class values
 		this.name = name;
 		this.tile = startingPosition;
 		this.player = player;
@@ -176,37 +176,50 @@ class Token {
 		this.allowedMovement = this.defaultAlloweMovement;
 		this.position = startingPosition;
 
-		this.mesh = new THREE.Object3D();
-		let displayMesh = mesh.clone();
-		this.mesh.material = new THREE.MeshLambertMaterial( { color: this.player.color, map: checkerbumpmap } );
-		this.mesh.add(displayMesh);
+		//create parent Group - used for interaction with other functions
+		this.mesh = new THREE.Group(); 
+		
+		//copy loaded geometry from library, create mesh, and add to parent object
+		this.displayMaterial = new THREE.MeshLambertMaterial( { color: this.player.color } );
+		this.displayMesh = new THREE.Mesh(   geometry.clone() , this.displayMaterial  );
+		this.displayMesh.castShadow = true;
+		this.displayMesh.receiveShadow = true;
+		
+		//add display mesh to parent and add parent to scene
+		this.mesh.add(this.displayMesh);
 		scene.add(this.mesh);
+		
+		//move to starting tile location
 		setTimeout(this.moveTo(this.tile),500);
 	}
 
 	moveTo(tile, color = null) {
+		//open current tile
+		this.tile.isOpen=true;
+		
+		//duplicate positions
 		let tilePos = new THREE.Vector3(tile.obj.position.x,tile.obj.position.y,tile.obj.position.z);
 		let socketPos = new THREE.Vector3(tile.socket.position.x,tile.socket.position.y,tile.socket.position.z);
 		let tokenPos = new THREE.Vector3(this.mesh.position.x,this.mesh.position.y,this.mesh.position.z);
+		
+		//calculate delta between current position and targit position
 		let placementPos = tilePos.add(socketPos);
 		let deltaPos = placementPos.add(tokenPos.negate());
+		
+		//move to target position
 		this.mesh.translateX(deltaPos.x);
 		this.mesh.translateY(deltaPos.y);
 		this.mesh.translateZ(deltaPos.z);
-		/*console.log('moving from');
-		console.log(this.mesh.position);
-		console.log('moving to');
-		console.log(tile.obj.position);
-		console.log('moving by');
-		console.log(deltaPos);*/
 
+
+		//assign new tile, 
 		this.tile=tile;
+		this.tile.isOpen=false;
+
+		//optional- highlight target tile, used for debugging
 		if (color)
 			this.tile.mesh.material.emissive.setHex(color);
 
-		/*console.log('result: tile, token');
-		console.log(this.tile.obj.position);
-		console.log(this.mesh.position)*/
 	}
 /*
 	rotateAvailableMovement(){
@@ -250,10 +263,17 @@ class Token {
 
 }
 
+
+
+
+
 class Tile {
 	constructor(color,position,border = false) {
+		//set default values for new tile
 		this.color = color;
 		this.position = position;
+
+		//default neighbors to null
 		this.n = null;
 		this.ne = null;
 		this.e = null;
@@ -264,8 +284,11 @@ class Tile {
 		this.nw = null;
 		this.u = null;
 		this.d = null;
+
+		//non-border tiles start open, until a token is placed on them
 		this.isOpen = !border;
 		
+		//construct tile geometry and determine appropriate material
 		if (!border)
 			this.geometry = new THREE.BoxGeometry( 1*scale,1*scale,1*scale );
 		else 
@@ -278,20 +301,29 @@ class Tile {
 				case 'white': this.material = whitetilematerial; break;
 				case 'border': this.material = bordermaterial; break;
 				}
-			//this.material = checkermaterial;
-			//new THREE.MeshLambertMaterial( { map: texture } );
 			}
-		this.obj = new THREE.Object3D();
+
+		//create parent object for tile - used to interact with other functions
+		this.obj = new THREE.Group();
 		this.mesh = new THREE.Mesh( this.geometry, this.material.clone() );
 		this.obj.add(this.mesh);
+
+		//add a socket for tokens to attach to. also used to highlight available moves
 		if (!this.isBorder){
-			this.socket = new THREE.Mesh( new THREE.SphereGeometry(.25*scale), );
+			//create sphere mesh for socket
+			this.socketMaterial = new THREE.MeshBasicMaterial({color: 0xe5ef2b});
+			this.socket = new THREE.Mesh( new THREE.SphereGeometry(.25*scale), this.socketMaterial );
+			this.socketMaterial.opacity=0;
+			//add socket to parent Object3D
 			this.obj.add(this.socket);
+			//raise socket to top of tile
 			this.socket.translateZ(.5*scale)
 		}
 
+		//add tile to scene
 		scene.add(this.obj);
 
+		//move tile into position
 		this.obj.translateX(this.position.x*scale);
 		this.obj.translateY(this.position.y*scale);
 	}

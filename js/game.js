@@ -189,8 +189,42 @@ class Token {
 		this.mesh.translateX(deltaPos.x);
 		this.mesh.translateY(deltaPos.y);
 		this.mesh.translateZ(deltaPos.z-scale);
-
+		console.log('moving');
 		this.tile=tile;
+	}
+
+	rotateAvailableMovement(){
+		let rotations = 0;
+		switch(this.player.playerDirection){
+			case (0,1): rotations=0; break;
+			case (1,0): rotations=1; break;
+			case (0,-1): rotations=2; break;
+			case (-1,0): rotations=3; break;
+		}
+
+		for (let i = 0; i<rotations; i++)
+			this.availableMovement = this.rotateAvailableMovementByHalfPi(this.availableMovement);
+	}
+
+	rotateAvailableMovementByHalfPi(AvailableMovementArray){
+		let fullArray = [];
+		AvailableMovementArray.forEach(function (movementArray){
+			let subArray = []
+			movementArray.forEach(function(move){
+				switch (move){
+					case 'n':  subArray.push('e'); break;
+					case 'ne':  subArray.push('se'); break;
+					case 'e':  subArray.push('s'); break;
+					case 'se':  subArray.push('sw'); break;
+					case 's':  subArray.push('w'); break;
+					case 'sw':  subArray.push('nw'); break;
+					case 'w':  subArray.push('n'); break;
+					case 'nw':  subArray.push('ne'); break;
+				}
+			});
+			fullArray.push(subArray);
+		});
+		return fullArray;
 	}
 	
 	getAvailableMoves(){

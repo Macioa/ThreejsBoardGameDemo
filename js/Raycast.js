@@ -12,11 +12,13 @@ function rayCast(filteredObjects){
 			INTERSECTED = intersects[ 0 ].object;
 			INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
 			INTERSECTED.material.emissive.setHex( 0xbeff6b );
+			INTERSECTED.material.emissiveIntensity=.3;
 			selected = INTERSECTED;
 		}
 	} else {
 		if ( INTERSECTED ) {
 			INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+			INTERSECTED.material.emissiveIntensity=1;
 		}
 		INTERSECTED = null;
 	}

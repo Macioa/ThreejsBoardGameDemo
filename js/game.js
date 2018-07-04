@@ -6,20 +6,18 @@ var scale = .25;
 //listener for token selection
 const tokenListener = () => {
 	if (INTERSECTED){
-		for (let token of gameInstance.activePlayer.tokens)
-			if (token.displayMesh==INTERSECTED){
-				gameInstance.selectTile(token);
-				//console.log(token);
-			}
+		let fromToken = gameInstance.activePlayer.tokens.find(token=> token.displayMesh == INTERSECTED);
+		gameInstance.selectTile(fromToken);
 	}
 }
 
 //listener for tile selection
 const tileListener = () => {
 	if (INTERSECTED){
-		if (INTERSECTED==gameInstance.selectToken.tile.socket)
+		if (INTERSECTED==gameInstance.selectedToken.tile.socket){
 			gameInstance.selectToken();
-		else gameInstance.startNextPlayerTurn();
+		}
+		//else gameInstance.startNextPlayerTurn();
 	}
 }
 
@@ -36,6 +34,7 @@ class Game {
 		this.activePlayerIndex = 0;
 		this.activePlayer=null;
 		this.selectedToken=null;
+		this.displayedMoves=[];
 
 		//build players
 		for (let i =0; i<playerNames.length; i++){
@@ -133,6 +132,10 @@ class Game {
 	}
 
 	selectToken(){
+		//clear existing moves
+		this.displayedMoves.forEach(tile=> tile.socketMaterial.opacity=0);
+		this.displayedMoves = [];
+
 		//set selectable objects
 		selectableObjects = [];
 		this.activePlayer.tokens.forEach(token => { selectableObjects.push(token.displayMesh) });
@@ -144,11 +147,15 @@ class Game {
 	
 	selectTile(fromToken){
 		document.removeEventListener('click', tokenListener);
+		document.addEventListener('click', tileListener);
 		this.selectedToken = fromToken;
 		selectableObjects = [];
-		for( let tile of this.selectedToken.getAvailableMoves() ){
-			tile.socketMaterial.opacity=0.4;
-			selectableObjects.push(tile.socket);
+
+		//render available moves and add them to selection queue
+		for( let moveOption of this.selectedToken.getAvailableMoves() ){
+			moveOption['tile'].socketMaterial.opacity=0.5;
+			this.displayedMoves.push(moveOption['tile']);
+			selectableObjects.push(moveOption['tile'].socket);
 		}
 	}
 }
@@ -186,7 +193,7 @@ class Token {
 		this.mesh = new THREE.Group(); 
 		
 		//copy loaded geometry from library, create mesh, and add to parent object
-		this.displayMaterial = new THREE.MeshLambertMaterial( { color: this.player.color } );
+		this.displayMaterial = new THREE.MeshStandardMaterial( { color: this.player.color } );
 		this.displayMesh = new THREE.Mesh(   geometry.clone() , this.displayMaterial  );
 		this.displayMesh.castShadow = true;
 		this.displayMesh.receiveShadow = true;
@@ -221,12 +228,21 @@ class Token {
 		//assign new tile, 
 		this.tile=tile;
 		this.tile.isOpen=false;
+		this.tile.token=this;
 
 		//optional- highlight target tile, used for debugging
 		if (color)
 			this.tile.mesh.material.emissive.setHex(color);
 
 	}
+
+	remove(){
+		//remove this token from player's inventory and game board
+		this.player.tokens = this.player.tokens.filter(token=> token!=this);
+		this.mesh.remove(scene);
+		console.log(`${gameInstance.activePlayer} took ${this.player}'s ${this.name}.`)
+	}
+
 /*
 	rotateAvailableMovement(){
 		let rotations = 0;
@@ -262,17 +278,6 @@ class Token {
 		return fullArray;
 	}
 	*/
-	getAvailableMoves(){
-		let canMoveTo = [];
-		for (let move of this.allowedMovement){
-			let resultTile = this.tile;
-			for (let stepDirection of move){
-				resultTile = resultTile[stepDirection];
-			}
-			canMoveTo.push(resultTile);
-		}
-		return canMoveTo;
-	}
 
 }
 
@@ -300,6 +305,7 @@ class Tile {
 
 		//non-border tiles start open, until a token is placed on them
 		this.isOpen = !border;
+		this.token = null;
 		
 		//construct tile geometry and determine appropriate material
 		if (!border)
@@ -324,7 +330,7 @@ class Tile {
 		//add a socket for tokens to attach to. also used to highlight available moves
 		if (!this.isBorder){
 			//create sphere mesh for socket
-			this.socketMaterial = new THREE.MeshBasicMaterial({color: 0xe5ef2b});
+			this.socketMaterial = new THREE.MeshLambertMaterial({color: 0xe5ef2b});
 			this.socket = new THREE.Mesh( new THREE.SphereGeometry(.25*scale), this.socketMaterial );
 			this.socketMaterial.transparent=true;
 			this.socketMaterial.opacity=0.0;

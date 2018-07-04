@@ -1,5 +1,5 @@
 
-	
+//load geometry for game pieces	
 let loader = new THREE.STLLoader();
 loader.load( './mesh/CheckerSmall.stl', function ( geometry ) {
 		//load checker geometry from file and store to global cache
@@ -9,10 +9,42 @@ loader.load( './mesh/CheckerSmall.stl', function ( geometry ) {
 		loadedMeshes.push(checkerGeometry);
 	} );
 
+//Define child class for game tokens. Behavior defined here applies to all tokens in game
+class CheckerPiece extends Token {
+	constructor(name, player, startingTile, geometry) {
+		super(name, player, startingTile, geometry);
+	}
+	getAvailableMoves(){//find available moves in present state for this token. This has to be in child class, because behavior is different for each game.
+		let canMoveTo = [];
+		canMoveTo.push({'tile' : this.tile});
 
-class Checker extends Token {
+		for (let move of this.allowedMovement){
+			let result = {};
+			result['captured'] = [];
+			result['tile'] = this.tile;
+			for (let stepDirection of move){
+				result['tile'] = result['tile'][stepDirection];
+			}
+			if (result['tile'].isOpen)
+				canMoveTo.push(result);
+			else if (   (result['tile'].token.player != this.player)   &&   (result['tile'][move[move.length-1]].isOpen)   ){
+				//if the tile contains an opponent's token and the space opposite the token is empty, the active player can 'jump' the token to capture it
+				result['captured'].push(result['tile'].token);
+				result['tile']=result['tile'][move[move.length-1]];
+				canMoveTo.push(result);
+			}
+		}
+		return canMoveTo;
+	}
+
+}
+
+
+class Checker extends CheckerPiece {//Define specific token. In checkers, this extra sub-class is not necessary since all game pieces carry the same behavior. 
+	//In more complex games, this child class will be used to define each type of game piece.
 	constructor(player, startingTile, geometry) {
 		super("checker", player, startingTile, geometry);
+
 		this.defaultAllowedMovement = [
 			['nw'],
 			['ne']
@@ -21,6 +53,8 @@ class Checker extends Token {
 	}
 }
 
+
+//define behavior specific to this game
 class Checkers extends Game {
 	constructor(players){
 		super(players);

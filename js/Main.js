@@ -39,12 +39,12 @@ function init() {
 	
 	whitetiletexture = new THREE.TextureLoader().load( "texture/awhite.png" );
 	blacktiletexture = new THREE.TextureLoader().load( "texture/ablack.png" );
-	bordertexture = new THREE.TextureLoader().load( "texture/11-seamless-leather-texture.png" );
-
+	//bordertexture = new THREE.TextureLoader().load( "texture/11-seamless-leather-texture.png" );
+	bordertexture = new THREE.TextureLoader().load( "texture/aborder.png" );
 
 	whitetilematerial = new THREE.MeshPhongMaterial( { map: whitetiletexture } );
 	blacktilematerial = new THREE.MeshPhongMaterial( { map: blacktiletexture } );
-	bordermaterial = new THREE.MeshPhongMaterial( { map: bordertexture, bumpMap: bordertexture } );
+	bordermaterial = new THREE.MeshLambertMaterial( { map: bordertexture, bumpMap: bordertexture } );
  
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );

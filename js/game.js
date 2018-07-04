@@ -9,7 +9,7 @@ const tokenListener = () => {
 		for (let token of gameInstance.activePlayer.tokens)
 			if (token.displayMesh==INTERSECTED){
 				gameInstance.selectTile(token);
-				console.log(token);
+				//console.log(token);
 			}
 	}
 }

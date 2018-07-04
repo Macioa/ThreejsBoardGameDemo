@@ -19,16 +19,32 @@ class CheckerPiece extends Token {
 		canMoveTo.push({'tile' : this.tile});
 
 		for (let move of this.allowedMovement){
+
 			let result = {};
 			result['captured'] = [];
 			result['tile'] = this.tile;
+
+			//follow the movement path
 			for (let stepDirection of move){
+				//if tile does not have a neighbor matching movement command assign result to null and break for loop entirely
+				if (!result['tile'][stepDirection]){
+					result = null;
+					break;
+				}
 				result['tile'] = result['tile'][stepDirection];
 			}
+
+			//if result was set to null, end execution of this iteration and proceed to next item in for loop
+			if (!result)
+				continue;
+
+			//if the end tile is open, add it to possible moves
 			if (result['tile'].isOpen)
 				canMoveTo.push(result);
+			
+			//if the tile contains an opponent's token and the space opposite the token is empty, the active player can 'jump' the token to capture it
+			//add to possible moves and add captured token to object
 			else if (   (result['tile'].token.player != this.player)   &&   (result['tile'][move[move.length-1]].isOpen)   ){
-				//if the tile contains an opponent's token and the space opposite the token is empty, the active player can 'jump' the token to capture it
 				result['captured'].push(result['tile'].token);
 				result['tile']=result['tile'][move[move.length-1]];
 				canMoveTo.push(result);

@@ -6,11 +6,12 @@ var scale = .25;
 //listener for token selection
 const tokenListener = () => {
 	if (INTERSECTED){
-		gameInstance.selectTile(INTERSECTED);
-		gameInstance.selectedToken = INTERSECTED;
-		console.log(INTERSECTED);
+		for (let token of gameInstance.activePlayer.tokens)
+			if (token.displayMesh==INTERSECTED){
+				gameInstance.selectTile(token);
+				console.log(token);
+			}
 	}
-
 }
 
 //listener for tile selection
@@ -141,9 +142,14 @@ class Game {
 		document.addEventListener('click', tokenListener);
 	}
 	
-	selectTile(fromTile){
+	selectTile(fromToken){
 		document.removeEventListener('click', tokenListener);
-		this.removeLine = fromTile;
+		this.selectedToken = fromToken;
+		selectableObjects = [];
+		for( let tile of this.selectedToken.getAvailableMoves() ){
+			tile.socketMaterial.opacity=0.4;
+			selectableObjects.push(tile.socket);
+		}
 	}
 }
 
@@ -257,8 +263,15 @@ class Token {
 	}
 	*/
 	getAvailableMoves(){
-		let tiles = [];
-
+		let canMoveTo = [];
+		for (let move of this.allowedMovement){
+			let resultTile = this.tile;
+			for (let stepDirection of move){
+				resultTile = resultTile[stepDirection];
+			}
+			canMoveTo.push(resultTile);
+		}
+		return canMoveTo;
 	}
 
 }

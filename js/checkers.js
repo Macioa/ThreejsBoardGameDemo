@@ -17,6 +17,7 @@ class Checker extends Token {
 			['nw'],
 			['ne']
 		];
+		this.allowedMovement=this.defaultAllowedMovement;
 	}
 }
 
@@ -36,6 +37,7 @@ class Checkers extends Game {
 			if (i%2==1)
 				s = 2;
 			for(let j = s; j<10; j+=2){
+				loadedMeshes[0].rotateZ( Math.random() * 2 * Math.PI );
 				let newToken = new Checker(this.players[0], this.board[i][j], loadedMeshes[0]);
 				this.players[0].addToken(newToken);
 			}

@@ -14,6 +14,7 @@ const tokenListener = () => {
 //listener for tile selection
 const tileListener = () => {
 	if (INTERSECTED){
+		//if player selects tile that selected token is already on, cancel move and return to previous state
 		if (INTERSECTED==gameInstance.selectedToken.tile.socket){
 			gameInstance.selectToken();
 		}
@@ -150,9 +151,17 @@ class Game {
 		document.addEventListener('click', tileListener);
 		this.selectedToken = fromToken;
 		selectableObjects = [];
+		
+		let availableMoves = this.selectedToken.getAvailableMoves()
+
+		if (availableMoves.length===1){
+			console.warn(`Can not move this ${fromToken.name}.`)
+			this.selectToken();
+			return;
+		}
 
 		//render available moves and add them to selection queue
-		for( let moveOption of this.selectedToken.getAvailableMoves() ){
+		for( let moveOption of availableMoves ){
 			moveOption['tile'].socketMaterial.opacity=0.5;
 			this.displayedMoves.push(moveOption['tile']);
 			selectableObjects.push(moveOption['tile'].socket);

@@ -2,6 +2,25 @@
 //Global scale. Objects too large or too distant are not rendered in threejs scene. Scaling them down prevents clipping. 
 var scale = .25;
 
+//listener for token selection by touch
+const touchToken = (event) => {
+	event.preventDefault();
+
+	mouse.x = ( event.touches[0].clientX / window.innerWidth ) * 2 - 1;
+	mouse.y = - ( event.touches[0].clientY / window.innerHeight ) * 2 + 1;
+	rayCast(mouse, selectableObjects);
+	tokenListener();
+}
+
+//listener for tile selection by touch
+const touchTile = (event) => {
+	event.preventDefault();
+
+	mouse.x = ( event.touches[0].clientX / window.innerWidth ) * 2 - 1;
+	mouse.y = - ( event.touches[0].clientY / window.innerHeight ) * 2 + 1;
+	rayCast(mouse, selectableObjects);
+	tileListener();
+}
 
 //listener for token selection
 const tokenListener = () => {
@@ -147,6 +166,9 @@ class Game {
 		//handle event listeners
 		document.removeEventListener('click', tileListener);
 		document.addEventListener('click', tokenListener);
+
+		document.removeEventListener('touchstart', touchTile);
+		document.addEventListener('touchstart',touchToken);
 	}
 	
 	selectTile(fromToken, continueExistingMove=false, forceCapture=false){
@@ -156,6 +178,9 @@ class Game {
 		//handle event listeners
 		document.removeEventListener('click', tokenListener);
 		document.addEventListener('click', tileListener);
+
+		document.removeEventListener('touchstart', touchToken);
+		document.addEventListener('touchstart', touchTile);
 
 		//store selected token and clear existing selectable objects
 		this.selectedToken = fromToken;

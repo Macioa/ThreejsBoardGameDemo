@@ -1,6 +1,6 @@
-function rayCast(filteredObjects){
+function rayCast(screenPoint, filteredObjects){
 	//standard raycaster
-	raycaster.setFromCamera( mouse, camera );
+	raycaster.setFromCamera( screenPoint, camera );
 
 	//run raycaster - only subset of filteredObjects is returned.
 	intersects = raycaster.intersectObjects( filteredObjects );
@@ -23,4 +23,6 @@ function rayCast(filteredObjects){
 		}
 		INTERSECTED = null;
 	}
+	return INTERSECTED;
 }
+

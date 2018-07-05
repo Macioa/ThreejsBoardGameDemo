@@ -3,7 +3,7 @@
 
 var raycaster = new THREE.Raycaster(), INTERSECTED, intersects;
 
-var camera, scene, renderer, mouse = new THREE.Vector2();
+var camera, scene, renderer, mouse = new THREE.Vector2(), touched, touchClear;
 
 var loadedMeshes=[];
 //var controls, dragControls, 
@@ -85,11 +85,20 @@ function onDocumentMouseMove( event ) {
 
 function animate() { 
 	requestAnimationFrame( animate );
-	rayCast(selectableObjects);
+	rayCast(mouse, selectableObjects);
     renderer.render( scene, camera );
 }
 
 
+/*function onTouch ( event ) {
+	event.preventDefault();
+
+	mouse.x = ( event.touches[0].clientX / window.innerWidth ) * 2 - 1;
+	mouse.y = - ( event.touches[0].clientY / window.innerHeight ) * 2 + 1;
+	console.log(mouse);
+}
+
+window.addEventListener('touchstart',onTouch);*/
 
 
 

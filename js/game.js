@@ -26,7 +26,7 @@ const touchTile = (event) => {
 const tokenListener = () => {
 	if (INTERSECTED){
 		let fromToken = gameInstance.activePlayer.tokens.find(token=> token.displayMesh == INTERSECTED);
-		gameInstance.selectTile(fromToken);
+		gameInstance.selectTile(fromToken,false,true);
 	}
 }
 
@@ -223,15 +223,17 @@ class Game {
 		if (continueExistingMove)
 			availableMoves=availableMoves.shift();
 
-		console.log(availableMoves);
+		//console.log(availableMoves);
 		//if forceCapture is enabled and captures are available, filter out moves that don't capture
 		let movesThatCapture = availableMoves.filter(move=> move['captured'].length);
-		if ( (forceCapture)  &&  (movesThatCapture.length) )
+		if ( (forceCapture)  &&  (movesThatCapture.length) ){
 			availableMoves = movesThatCapture;
+			console.log(availableMoves);
+		}
 
 		this.availableMoves = availableMoves;
 
-		if (availableMoves.length<=1){
+		if ( (availableMoves.length<=1)  &&  (availableMoves[0]['tile']==this.tile) ){
 			console.warn(`Can not move this ${fromToken.name}.`)
 			this.selectToken();
 			return;

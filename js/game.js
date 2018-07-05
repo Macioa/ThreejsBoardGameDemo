@@ -18,7 +18,16 @@ const tileListener = () => {
 		if (INTERSECTED==gameInstance.selectedToken.tile.socket){
 			gameInstance.selectToken();
 		}
-		//else gameInstance.startNextPlayerTurn();
+		else{
+		//else find parent tile and process move
+			let toTile = null;
+			for (let row of gameInstance.board){
+				let searchResult = row.find(tile=> tile.socket == INTERSECTED);
+				if (searchResult)
+					toTile = searchResult;
+			}
+			gameInstance.processMove(toTile);
+		}
 	}
 }
 
@@ -27,35 +36,29 @@ const tileListener = () => {
 
 
 class Game {
-	constructor (playerNames) {
+	constructor (playerNames, colorArray) {
 		//initialize default values
-		this.board = [];
-		this.tokens = [];
-		this.players = [];
+		this.board = []; //multidimensional array of Tile objects
+		//this.tokens = [];
+		this.players = []; //array of Player objects
 		this.activePlayerIndex = 0;
-		this.activePlayer=null;
-		this.selectedToken=null;
-		this.displayedMoves=[];
+		this.activePlayer=null; //object of class Player
+		this.selectedToken=null; //object of class Token
+		this.availableMoves=null; //array of move result objects with 'tile' property and 
+		this.displayedMoves=[]; //array of Tile objects highlighted after a Token is selected to move
+		this.continuedMove = false; //continuing existing move;
 
 		//build players
 		for (let i =0; i<playerNames.length; i++){
-			let color = null; let direction = null;
+			let direction = null;
 			switch (i){
-				case 0: color = '#a31f01'; 
-						direction = (0,1);
-						break;
-				case 1: color = '#161616'; 
-						direction = (0,-1);
-						break;
-				case 2: color = '#0145b2';
-						direction = (1,0);
-						break;
-				case 3: color = '#b28e01'; 
-						direction = (-1,0);
-						break;
+				case 0: direction = (0,1);		break;
+				case 1: direction = (0,-1);		break;
+				case 2: direction = (1,0);		break;
+				case 3: direction = (-1,0);		break;
 			}
-			
-			this.players.push(new Player(playerNames[i], color, direction));
+			//console.log(`building ${playerNames[i]} with ${colorArray[i]} color and ${direction} direction`)
+			this.players.push(new Player(playerNames[i], colorArray[i], direction));
 		}
 	}
 
@@ -118,15 +121,15 @@ class Game {
 	}
 
 	startNextPlayerTurn(){
+		this.continuedMove = false;
 		//set active player
-		if ( (!this.activePlayer)  ||  (this.activePlayerIndex>=this.players.length) ){
-			this.activePlayer=this.players[0];
+		if ( (!this.activePlayer)  ||  (this.activePlayerIndex==this.players.length-1) ||  (this.activePlayerIndex==undefined) ){
 			this.activePlayerIndex=0;
 		}
 		else {
-			activePlayerIndex++;
-			this.activePlayer=this.players[this.activePlayerIndex];
+			this.activePlayerIndex++;
 		}
+		this.activePlayer=this.players[this.activePlayerIndex];
 		//let active player select a token to move
 		console.log(`Starting ${this.activePlayer.name}'s turn.`);
 		this.selectToken();
@@ -141,20 +144,39 @@ class Game {
 		selectableObjects = [];
 		this.activePlayer.tokens.forEach(token => { selectableObjects.push(token.displayMesh) });
 
-		//set event listeners
+		//handle event listeners
 		document.removeEventListener('click', tileListener);
 		document.addEventListener('click', tokenListener);
 	}
 	
-	selectTile(fromToken){
+	selectTile(fromToken, continueExistingMove=false, forceCapture=false){
+		//clear any existing moves
+		this.displayedMoves.forEach(tile=> tile.socketMaterial.opacity=0.0);
+		this.displayedMoves = [];
+		//handle event listeners
 		document.removeEventListener('click', tokenListener);
 		document.addEventListener('click', tileListener);
+
+		//store selected token and clear existing selectable objects
 		this.selectedToken = fromToken;
 		selectableObjects = [];
 		
+		//use getAvailableMoves function defined in child class to determine where the selected tile can move
 		let availableMoves = this.selectedToken.getAvailableMoves()
 
-		if (availableMoves.length===1){
+		//if turn is continued, disable canceling move
+		if (continueExistingMove)
+			availableMoves=availableMoves.shift();
+
+		console.log(availableMoves);
+		//if forceCapture is enabled and captures are available, filter out moves that don't capture
+		let movesThatCapture = availableMoves.filter(move=> move['captured'].length);
+		if ( (forceCapture)  &&  (movesThatCapture.length) )
+			availableMoves = movesThatCapture;
+
+		this.availableMoves = availableMoves;
+
+		if (availableMoves.length<=1){
 			console.warn(`Can not move this ${fromToken.name}.`)
 			this.selectToken();
 			return;
@@ -166,11 +188,32 @@ class Game {
 			this.displayedMoves.push(moveOption['tile']);
 			selectableObjects.push(moveOption['tile'].socket);
 		}
+
+		if (!this.availableMoves.length)
+			this.startNextPlayerTurn();
+	}
+
+	processMove(toTile, continueAfterCapture=false){
+		//find the matching move result
+		let moveResult = this.availableMoves.find(move=> toTile==move['tile']);
+		//if move resulted in captured tokens, remove them from the game
+		moveResult['captured'].forEach(token=> token.remove());
+		//move the token to new tile
+		this.selectedToken.moveTo(toTile);
+
+		if (continueAfterCapture){
+			console.log('temp');
+		}
+
+		//check special conditions
+
+		//proceed to next turn
+		this.startNextPlayerTurn();
 	}
 }
 
 class Player {
-	constructor(name,color, playerDirection){
+	constructor(name, color, playerDirection){
 		//set default player values
 		this.name = name;
 		this.color = color;
@@ -202,6 +245,7 @@ class Token {
 		this.mesh = new THREE.Group(); 
 		
 		//copy loaded geometry from library, create mesh, and add to parent object
+		//console.log(`constructing token for ${this.player.name} in ${this.player.color}`)
 		this.displayMaterial = new THREE.MeshStandardMaterial( { color: this.player.color } );
 		this.displayMesh = new THREE.Mesh(   geometry.clone() , this.displayMaterial  );
 		this.displayMesh.castShadow = true;
@@ -217,7 +261,8 @@ class Token {
 
 	moveTo(tile, color = null) {
 		//open current tile
-		this.tile.isOpen=true;
+		if (this.tile)
+			this.tile.isOpen=true;
 		
 		//duplicate positions
 		let tilePos = new THREE.Vector3(tile.obj.position.x,tile.obj.position.y,tile.obj.position.z);
@@ -248,12 +293,13 @@ class Token {
 	remove(){
 		//remove this token from player's inventory and game board
 		this.player.tokens = this.player.tokens.filter(token=> token!=this);
-		this.mesh.remove(scene);
-		console.log(`${gameInstance.activePlayer} took ${this.player}'s ${this.name}.`)
+		this.tile.isOpen=true;
+		scene.remove(this.mesh);
+		console.log(`${gameInstance.activePlayer.name} took ${this.player.name}'s ${this.name}.`)
 	}
 
-/*
-	rotateAvailableMovement(){
+
+	rotateToPlayerDirection(){
 		let rotations = 0;
 		switch(this.player.playerDirection){
 			case (0,1): rotations=0; break;
@@ -262,15 +308,16 @@ class Token {
 			case (-1,0): rotations=3; break;
 		}
 
+		this.allowedMovement = this.defaultAllowedMovement
 		for (let i = 0; i<rotations; i++)
-			this.availableMovement = this.rotateAvailableMovementByHalfPi(this.availableMovement);
+			this.allowedMovement = this.rotateAvailableMovementByHalfPi(this.allowedMovement);
 	}
 
 	rotateAvailableMovementByHalfPi(AvailableMovementArray){
 		let fullArray = [];
-		AvailableMovementArray.forEach(function (movementArray){
+		AvailableMovementArray.forEach(movementArray=> {
 			let subArray = []
-			movementArray.forEach(function(move){
+			movementArray.forEach(move=> {
 				switch (move){
 					case 'n':   subArray.push('e'); break;
 					case 'ne':  subArray.push('se'); break;
@@ -284,9 +331,10 @@ class Token {
 			});
 			fullArray.push(subArray);
 		});
+		//this.displayMesh.rotateZ(-Math.PI/2);
 		return fullArray;
 	}
-	*/
+	
 
 }
 

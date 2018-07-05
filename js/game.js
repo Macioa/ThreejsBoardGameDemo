@@ -35,7 +35,7 @@ const tileListener = () => {
 	if (INTERSECTED){
 		//if player selects tile that selected token is already on, cancel move and return to previous state
 		if (INTERSECTED==gameInstance.selectedToken.tile.socket){
-			gameInstance.selectToken();
+			gameInstance.selectToken(true);
 		}
 		else{
 		//else find parent tile and process move
@@ -69,7 +69,7 @@ class Game {
 
 
 		this.currentPlayerHTML = document.createElement('div');
-		this.currentPlayerHTML.style.padding='10px';
+		this.currentPlayerHTML.style.padding='30px';
 		this.currentPlayerHTML.style.zIndex='99';
 		this.currentPlayerHTML.style.position='relative';
 		this.currentPlayerHTML.style.display='inline-block';
@@ -84,6 +84,7 @@ class Game {
 		this.currentPlayerHTML.append(this.currentPlayerTag);
 		this.currentPlayerTag.style.backgroundColor='white';
 		this.currentPlayerTag.style.borderRadius='5px';
+		this.currentPlayerTag.style.padding="2px";
 		
 		document.body.append(this.currentPlayerHTML);
 
@@ -181,17 +182,39 @@ class Game {
 		//controls.update();
 		camera = this.activePlayer.camera;
 
-		this.selectToken();
+		this.selectToken(true);
 	}
 
-	selectToken(){
+	selectToken(forceCapture=false){
 		//clear existing moves
 		this.displayedMoves.forEach(tile=> tile.socketMaterial.opacity=0);
 		this.displayedMoves = [];
 
+		//get all player tokens, find their available moves, and filter out tokens that have no moves
+		let playerTokens = this.activePlayer.tokens;
+		playerTokens.forEach(token=> token.availableMoves=token.getAvailableMoves());
+		playerTokens = playerTokens.filter(token=> token.availableMoves.length>1);
+
+		//if forceCapture and capture available, filter out non-capture moves
+		if (forceCapture){
+			let captureAvailable = false;
+			playerTokens.forEach(token=> {token.availableMoves.forEach(move=>{
+				if (move['captured'].length)
+					captureAvailable = true;
+				});
+			});
+			if (captureAvailable){
+				playerTokens.forEach(token=> {
+					token.availableMoves=token.availableMoves.filter(move=>move['captured'].length);
+				});
+				playerTokens=playerTokens.filter(token=>token.availableMoves.length);
+			}
+		}
+
+		
 		//set selectable objects
 		selectableObjects = [];
-		this.activePlayer.tokens.forEach(token => { selectableObjects.push(token.displayMesh) });
+		playerTokens.forEach(token => { selectableObjects.push(token.displayMesh) });
 
 		//handle event listeners
 		document.removeEventListener('click', tileListener);
@@ -223,7 +246,6 @@ class Game {
 		if (continueExistingMove)
 			availableMoves.shift();
 
-		console.log(availableMoves);
 		//if forceCapture is enabled and captures are available, filter out moves that don't capture
 		let movesThatCapture = availableMoves.filter(move=> move['captured'].length);
 		if ( (forceCapture)  &&  (movesThatCapture.length) ){
@@ -234,7 +256,7 @@ class Game {
 
 		if ( (availableMoves.length<=1)  &&  (availableMoves[0]['tile']==this.tile) ){
 			console.warn(`Can not move this ${fromToken.name}.`)
-			this.selectToken();
+			this.selectToken(true);
 			return;
 		}
 

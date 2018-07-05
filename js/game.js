@@ -221,14 +221,13 @@ class Game {
 
 		//if turn is continued, disable canceling move
 		if (continueExistingMove)
-			availableMoves=availableMoves.shift();
+			availableMoves.shift();
 
-		//console.log(availableMoves);
+		console.log(availableMoves);
 		//if forceCapture is enabled and captures are available, filter out moves that don't capture
 		let movesThatCapture = availableMoves.filter(move=> move['captured'].length);
 		if ( (forceCapture)  &&  (movesThatCapture.length) ){
 			availableMoves = movesThatCapture;
-			console.log(availableMoves);
 		}
 
 		this.availableMoves = availableMoves;
@@ -250,16 +249,17 @@ class Game {
 			this.startNextPlayerTurn();
 	}
 
-	processMove(toTile, continueAfterCapture=false){
+	processMove(toTile){
 		//find the matching move result
 		let moveResult = this.availableMoves.find(move=> toTile==move['tile']);
 		//if move resulted in captured tokens, remove them from the game
 		moveResult['captured'].forEach(token=> token.remove());
 		//move the token to new tile
 		this.selectedToken.moveTo(toTile);
-
-		if (continueAfterCapture){
-			console.log('temp');
+		if ( (moveResult['captured'].length)  &&  (this.selectedToken.getAvailableMoves().length>1) ){
+			console.log('test');
+			this.selectTile(this.selectedToken,true,true);
+			return;
 		}
 
 		//check special conditions

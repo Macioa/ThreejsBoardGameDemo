@@ -256,10 +256,14 @@ class Game {
 		moveResult['captured'].forEach(token=> token.remove());
 		//move the token to new tile
 		this.selectedToken.moveTo(toTile);
-		if ( (moveResult['captured'].length)  &&  (this.selectedToken.getAvailableMoves().length>1) ){
-			console.log('test');
-			this.selectTile(this.selectedToken,true,true);
-			return;
+		//if a token was captured, check for additional captures. continue move if any are available.
+		if  (moveResult['captured'].length)  {
+			let checkMoves = this.selectedToken.getAvailableMoves();
+			checkMoves = checkMoves.filter(move=> move['captured'].length);
+			if  (checkMoves.length) {
+				this.selectTile(this.selectedToken,true,true);
+				return;
+			}	
 		}
 
 		//check special conditions

@@ -172,11 +172,14 @@ class Game {
 
 		this.currentPlayerTag.innerText=`${this.activePlayer.name}'s turn.`
 		this.currentPlayerHTML.style.backgroundColor=this.activePlayer.color;
-		console.log(this.activePlayer.color)
+
 
 		//let active player select a token to move
-
-		camera.moveTo(this.activePlayer.cameraPosition, this.activePlayer.cameraRotation);
+		//camera.rotateZ(Math.PI);
+		//camera.rotateOnWorldAxis(new THREE.Vector3(0,0,1), Math.PI);
+		//camera.moveTo(this.activePlayer.cameraPosition, this.activePlayer.cameraRotation);
+		//controls.update();
+		camera = this.activePlayer.camera;
 
 		this.selectToken();
 	}
@@ -272,19 +275,19 @@ class Player {
 		this.tokens = [];
 		this.playerDirection = playerDirection;
 
-		//this.camera =  new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
-		//this.camera.position.z = 2;
+		this.camera =  new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
+		this.camera.position.z = 2;
 		switch (this.playerDirection){
-			case (0,1): //this.camera.position.y=-8*scale;
-						//this.camera.rotation.x=(Math.PI/4); 
-						this.cameraPosition = new THREE.Vector3(0.0, -8*scale, 2);
-						this.cameraRotation = new THREE.Vector3(Math.PI/4, 0.0, 0.0);
+			case (0,1): this.camera.position.y=-8*scale;
+						this.camera.rotation.x=(Math.PI/4); 
+						//this.cameraPosition = new THREE.Vector3(0.0, -8*scale, 2);
+						//this.cameraRotation = new THREE.Vector3(Math.PI/4, 0.0, 0.0);
 						break;
-			case (0,-1): //this.camera.position.y=8*scale; 
-						//this.camera.rotation.x=(-Math.PI/4); 
-						//this.camera.rotation.z=(Math.PI);
-						this.cameraPosition = new THREE.Vector3(0.0, 8*scale, 2);
-						this.cameraRotation = new THREE.Vector3( Math.PI/4, 0.0, Math.PI/2 );
+			case (0,-1): this.camera.position.y=8*scale; 
+						this.camera.rotation.x=(-Math.PI/4); 
+						this.camera.rotation.z=(Math.PI);
+						//this.cameraPosition = new THREE.Vector3(0.0, 8*scale, 2);
+						//this.cameraRotation = new THREE.Vector3( Math.PI/4, 0.0, Math.PI/2 );
 						break;
 			case (1,0): this.camera.position.x=-8*scale; break;
 			case (-1,0): this.camera.position.x=8*scale; break;

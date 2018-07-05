@@ -3,7 +3,7 @@
 
 var raycaster = new THREE.Raycaster(), INTERSECTED, intersects;
 
-var camera, scene, renderer, controls, mouse = new THREE.Vector2();
+var camera, gimbal, scene, renderer, controls, mouse = new THREE.Vector2();
 
 var loadedMeshes=[];
 //var controls, dragControls, 
@@ -32,8 +32,11 @@ window.addEventListener('resize', function() {
 
  
 function init() {
-    camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
-    camera.position.z = 5;
+	camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
+	//camera.rotation.z = Math.PI;
+	camera.position.z = 2;
+	camera.position.y = -2;
+	
  
     scene = new THREE.Scene();
 	
@@ -50,6 +53,8 @@ function init() {
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.getElementById('renderArea').appendChild( renderer.domElement );
 
+	gimbal = new THREE.Group();
+	//gimbal.add(camera);
 
 	//let dragControls = new THREE.DragControls( objects, camera, renderer.domElement );
 	//dragControls.addEventListener( 'dragstart', function ( event ) { controls.enabled = false; } );
@@ -60,7 +65,7 @@ function init() {
 	controls = new THREE.OrbitControls( camera, renderer.domElement );
 
 	var spotlightA = new THREE.SpotLight( 0xffffff );
-	spotlightA.position.set( 10, 0, 10 );
+	spotlightA.position.set( 0, -10, 10 );
 	scene.add( spotlightA );
 	
 	var spotlightB = new THREE.SpotLight( 0xffffff );
@@ -84,6 +89,9 @@ function onDocumentMouseMove( event ) {
 
 
 function animate() { 
+	controls.camera=camera;
+	controls.update();
+
 	requestAnimationFrame( animate );
 	rayCast(mouse, selectableObjects);
     renderer.render( scene, camera );
@@ -102,7 +110,7 @@ camera.moveTo = (targetLocation, targetRotation) => {
 	let newRot = targetRotation.clone();	
 	camera.rotation.x = newRot.x;
 	camera.rotation.y = newRot.y;
-	camera.rotation.z = newRot.z;
+	//camera.rotation.z = newRot.z;
 	//console.log(camera.rotation)
 
 	//controls.camera = camera;

@@ -67,6 +67,26 @@ class Game {
 		this.displayedMoves=[]; //array of Tile objects highlighted after a Token is selected to move
 		this.continuedMove = false; //continuing existing move;
 
+
+		this.currentPlayerHTML = document.createElement('div');
+		this.currentPlayerHTML.style.padding='10px';
+		this.currentPlayerHTML.style.zIndex='99';
+		this.currentPlayerHTML.style.position='relative';
+		this.currentPlayerHTML.style.display='inline-block';
+		this.currentPlayerHTML.style.borderStyle="solid";
+		this.currentPlayerHTML.style.borderRadius="20px";
+		this.currentPlayerHTML.style.borderColor='white';
+		this.currentPlayerHTML.style.backgroundColor='white';
+		this.currentPlayerHTML.style.margin='auto';
+		this.currentPlayerHTML.style.top="0px;"
+
+		this.currentPlayerTag = document.createElement('span');
+		this.currentPlayerHTML.append(this.currentPlayerTag);
+		this.currentPlayerTag.style.backgroundColor='white';
+		this.currentPlayerTag.style.borderRadius='5px';
+		
+		document.body.append(this.currentPlayerHTML);
+
 		//build players
 		for (let i =0; i<playerNames.length; i++){
 			let direction = null;
@@ -149,8 +169,15 @@ class Game {
 			this.activePlayerIndex++;
 		}
 		this.activePlayer=this.players[this.activePlayerIndex];
+
+		this.currentPlayerTag.innerText=`${this.activePlayer.name}'s turn.`
+		this.currentPlayerHTML.style.backgroundColor=this.activePlayer.color;
+		console.log(this.activePlayer.color)
+
 		//let active player select a token to move
-		console.log(`Starting ${this.activePlayer.name}'s turn.`);
+
+		camera.moveTo(this.activePlayer.cameraPosition, this.activePlayer.cameraRotation);
+
 		this.selectToken();
 	}
 
@@ -244,6 +271,26 @@ class Player {
 		this.color = color;
 		this.tokens = [];
 		this.playerDirection = playerDirection;
+
+		//this.camera =  new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
+		//this.camera.position.z = 2;
+		switch (this.playerDirection){
+			case (0,1): //this.camera.position.y=-8*scale;
+						//this.camera.rotation.x=(Math.PI/4); 
+						this.cameraPosition = new THREE.Vector3(0.0, -8*scale, 2);
+						this.cameraRotation = new THREE.Vector3(Math.PI/4, 0.0, 0.0);
+						break;
+			case (0,-1): //this.camera.position.y=8*scale; 
+						//this.camera.rotation.x=(-Math.PI/4); 
+						//this.camera.rotation.z=(Math.PI);
+						this.cameraPosition = new THREE.Vector3(0.0, 8*scale, 2);
+						this.cameraRotation = new THREE.Vector3( Math.PI/4, 0.0, Math.PI/2 );
+						break;
+			case (1,0): this.camera.position.x=-8*scale; break;
+			case (-1,0): this.camera.position.x=8*scale; break;
+		}
+
+		
 	}
 
 	addToken(token){

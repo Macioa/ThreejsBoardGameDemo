@@ -3,19 +3,24 @@
 <html>
 	<head>
 		<meta charset=utf-8>
+		<link rel="stylesheet" type="text/css" media="screen" href="main.css" />
 		<title>ThreeJS Board Game by Ryan Montgomery</title>
 	</head>
 
 	<style>
-		body { margin: 0; width: 100%; height: 100%; }
+		body { margin: 0; width: 100%; height: 100%; text-align: center; }
 		canvas { width: 100%; height: 100% }
+		#renderArea{ margin: 0; width: 100%; height: 100%; z-index: 0; position: absolute; top: 0px; left: 0px; }
 	</style>
 	<body>
-		<div>
-		<script src="js/three.min.js"></script>
+		<div id="renderArea"/>
 
-		<script src="js/STLLoader.js"></script>
-		<script src="js/OrbitControls.js"></script>
+
+		<div>
+		<script src="js/threejs/three.min.js"></script>
+
+		<script src="js/threejs/STLLoader.js"></script>
+		<script src="js/threejs/OrbitControls.js"></script>
 		
 		<script src="js/Raycast.js"></script>
 		<script src="js/Main.js"></script>

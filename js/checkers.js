@@ -75,7 +75,7 @@ class Checker extends CheckerPiece {//Define specific token. In checkers, this e
 //define behavior specific to this game
 class Checkers extends Game {
 	constructor(players){
-		let playerColorArray = [0xa31f01, 0x161616, 0x0145b2, 0xb28e01];
+		let playerColorArray = ['#a31f01', '#161616', '#0145b2', '#b28e01'];
 		super(players, playerColorArray);
 		//name game
 		this.name = "Checkers";

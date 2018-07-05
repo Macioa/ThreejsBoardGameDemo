@@ -3,7 +3,7 @@
 
 var raycaster = new THREE.Raycaster(), INTERSECTED, intersects;
 
-var camera, scene, renderer, mouse = new THREE.Vector2(), touched, touchClear;
+var camera, scene, renderer, controls, mouse = new THREE.Vector2();
 
 var loadedMeshes=[];
 //var controls, dragControls, 
@@ -48,7 +48,7 @@ function init() {
  
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
-    document.body.appendChild( renderer.domElement );
+    document.getElementById('renderArea').appendChild( renderer.domElement );
 
 
 	//let dragControls = new THREE.DragControls( objects, camera, renderer.domElement );
@@ -57,7 +57,7 @@ function init() {
 
 	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 
-	let controls = new THREE.OrbitControls( camera, renderer.domElement );
+	controls = new THREE.OrbitControls( camera, renderer.domElement );
 
 	var spotlightA = new THREE.SpotLight( 0xffffff );
 	spotlightA.position.set( 10, 0, 10 );
@@ -90,16 +90,21 @@ function animate() {
 }
 
 
-/*function onTouch ( event ) {
-	event.preventDefault();
 
-	mouse.x = ( event.touches[0].clientX / window.innerWidth ) * 2 - 1;
-	mouse.y = - ( event.touches[0].clientY / window.innerHeight ) * 2 + 1;
-	console.log(mouse);
+camera.moveTo = (targetLocation, targetRotation) => {
+	//console.log(targetLocation)
+	//console.log(targetRotation)
+	let newPos = targetLocation.clone();
+	camera.position.x = newPos.x;
+	camera.position.y = newPos.y;
+	camera.position.z = newPos.z;
+
+	let newRot = targetRotation.clone();	
+	camera.rotation.x = newRot.x;
+	camera.rotation.y = newRot.y;
+	camera.rotation.z = newRot.z;
+	//console.log(camera.rotation)
+
+	//controls.camera = camera;
+	controls.update();
 }
-
-window.addEventListener('touchstart',onTouch);*/
-
-
-
-

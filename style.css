@@ -3,11 +3,13 @@
     text-align: center;
 }
 #mainMenu{
-    top:300px;
+    top:20%;
+    left:40%;
     text-align: center;
     display: inline-block;
     margin: auto;
     position: absolute;
+    z-index: 99;
 }
 #fieldContainer{
     text-align: center;

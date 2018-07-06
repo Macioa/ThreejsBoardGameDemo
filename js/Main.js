@@ -53,16 +53,9 @@ function init() {
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.getElementById('renderArea').appendChild( renderer.domElement );
 
-	gimbal = new THREE.Group();
-	//gimbal.add(camera);
-
-	//let dragControls = new THREE.DragControls( objects, camera, renderer.domElement );
-	//dragControls.addEventListener( 'dragstart', function ( event ) { controls.enabled = false; } );
-	//dragControls.addEventListener( 'dragend', function ( event ) { controls.enabled = true; } );
-
 	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 
-	controls = new THREE.OrbitControls( camera, renderer.domElement );
+	//controls = new THREE.OrbitControls( camera, renderer.domElement );
 
 	var spotlightA = new THREE.SpotLight( 0xffffff );
 	spotlightA.position.set( 0, -10, 10 );
@@ -89,8 +82,8 @@ function onDocumentMouseMove( event ) {
 
 
 function animate() { 
-	controls.camera=camera;
-	controls.update();
+	//controls.object=camera;
+	//controls.update();
 
 	requestAnimationFrame( animate );
 	rayCast(mouse, selectableObjects);
@@ -98,21 +91,3 @@ function animate() {
 }
 
 
-
-camera.moveTo = (targetLocation, targetRotation) => {
-	//console.log(targetLocation)
-	//console.log(targetRotation)
-	let newPos = targetLocation.clone();
-	camera.position.x = newPos.x;
-	camera.position.y = newPos.y;
-	camera.position.z = newPos.z;
-
-	let newRot = targetRotation.clone();	
-	camera.rotation.x = newRot.x;
-	camera.rotation.y = newRot.y;
-	//camera.rotation.z = newRot.z;
-	//console.log(camera.rotation)
-
-	//controls.camera = camera;
-	controls.update();
-}

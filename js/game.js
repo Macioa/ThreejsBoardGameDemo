@@ -171,6 +171,12 @@ class Game {
 		}
 		this.activePlayer=this.players[this.activePlayerIndex];
 
+		//if active player is out of tokens, skip to next player
+		if (!this.activePlayer.tokens.length){
+			this.startNextPlayerTurn();
+			return;
+		}
+
 		this.currentPlayerTag.innerText=`${this.activePlayer.name}'s turn.`
 		this.currentPlayerHTML.style.backgroundColor=this.activePlayer.color;
 
@@ -289,6 +295,10 @@ class Game {
 		}
 
 		//check special conditions
+		this.selectedToken.checkPromotion();
+
+		//check to see if game is over
+		this.checkVictory();
 
 		//proceed to next turn
 		this.startNextPlayerTurn();
@@ -305,6 +315,7 @@ class Player {
 
 		this.camera =  new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
 		this.camera.position.z = 2;
+		console.log(this.playerDirection)
 		switch (this.playerDirection){
 			case (0,1): this.camera.position.y=-8*scale;
 						this.camera.rotation.x=(Math.PI/4); 
@@ -317,8 +328,14 @@ class Player {
 						//this.cameraPosition = new THREE.Vector3(0.0, 8*scale, 2);
 						//this.cameraRotation = new THREE.Vector3( Math.PI/4, 0.0, Math.PI/2 );
 						break;
-			case (1,0): this.camera.position.x=-8*scale; break;
-			case (-1,0): this.camera.position.x=8*scale; break;
+			case (1,0): this.camera.position.x=-8*scale; 
+						this.camera.rotation.y=(-Math.PI/4); 
+						this.camera.rotation.z=(-Math.PI/2);
+						break;
+			case (-1,0): this.camera.position.x=8*scale; 
+						this.camera.rotation.y=(Math.PI/4); 
+						//this.camera.rotation.z=(-Math.PI/2);
+						break;
 		}
 
 		
@@ -350,9 +367,7 @@ class Token {
 		//copy loaded geometry from library, create mesh, and add to parent object
 		//console.log(`constructing token for ${this.player.name} in ${this.player.color}`)
 		this.displayMaterial = new THREE.MeshStandardMaterial( { color: this.player.color } );
-		this.displayMesh = new THREE.Mesh(   geometry.clone() , this.displayMaterial  );
-		this.displayMesh.castShadow = true;
-		this.displayMesh.receiveShadow = true;
+		this.constructMesh(geometry);
 		
 		//add display mesh to parent and add parent to scene
 		this.mesh.add(this.displayMesh);
@@ -360,6 +375,11 @@ class Token {
 		
 		//move to starting tile location
 		setTimeout(this.moveTo(this.tile),500);
+	}
+	constructMesh(geometry){
+		this.displayMesh = new THREE.Mesh(   geometry.clone() , this.displayMaterial  );
+		this.displayMesh.castShadow = true;
+		this.displayMesh.receiveShadow = true;
 	}
 
 	moveTo(tile, color = null) {
@@ -437,6 +457,11 @@ class Token {
 		//this.displayMesh.rotateZ(-Math.PI/2);
 		return fullArray;
 	}
+
+	updateModel(geometry){
+		this.mesh.remove(this.displayMesh);
+		this.constructMesh(geometry);
+	}
 	
 
 }
@@ -491,7 +516,7 @@ class Tile {
 		if (!this.isBorder){
 			//create sphere mesh for socket
 			this.socketMaterial = new THREE.MeshLambertMaterial({color: 0xe5ef2b});
-			this.socket = new THREE.Mesh( new THREE.SphereGeometry(.25*scale), this.socketMaterial );
+			this.socket = new THREE.Mesh( new THREE.SphereGeometry(.5*scale), this.socketMaterial );
 			this.socketMaterial.transparent=true;
 			this.socketMaterial.opacity=0.0;
 			//add socket to parent Object3D

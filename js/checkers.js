@@ -1,6 +1,26 @@
+//load complex geometry for game pieces
+let fullLoader = new THREE.STLLoader();
+fullLoader.onLoadComplete=function(){
+	console.log('Full checker mesh loaded.')
+	gameInstance.players.forEach(player=> {player.tokens.forEach(token=>{
+		token.updateModel(loadedMeshes[1]);
+		})
+	})
+}
+const loadLarge = () => {
+	fullLoader.load('./mesh/Checker.stl', function ( geometry ) {
+		//load checker geometry from file and store to global cache
+		let checkerGeometry = new THREE.Geometry().fromBufferGeometry(geometry);
+		checkerGeometry.rotateX( Math.PI );
+		checkerGeometry.scale( .25/6, .25/6, .25/6 );
+		loadedMeshes.push(checkerGeometry);
+	});
+}
 
-//load geometry for game pieces	
+
+//load simple geometry for game pieces	
 let loader = new THREE.STLLoader();
+loader.onLoadComplete= function(){loadLarge(); console.log('Small checker mesh loaded.'); } 
 loader.load( './mesh/CheckerSmall.stl', function ( geometry ) {
 		//load checker geometry from file and store to global cache
 		let checkerGeometry = new THREE.Geometry().fromBufferGeometry(geometry);
@@ -53,6 +73,7 @@ class CheckerPiece extends Token {
 		return canMoveTo;
 	}
 
+
 }
 
 
@@ -60,6 +81,7 @@ class Checker extends CheckerPiece {//Define specific token. In checkers, this e
 	//In more complex games, this child class will be used to define each type of game piece.
 	constructor(player, startingTile, geometry) {
 		super("checker", player, startingTile, geometry);
+		this.isKing = false;
 
 		this.defaultAllowedMovement = [
 			['nw'],
@@ -68,6 +90,28 @@ class Checker extends CheckerPiece {//Define specific token. In checkers, this e
 		this.allowedMovement=this.defaultAllowedMovement;
 		//rotate piece and available movement to match player direction
 		this.rotateToPlayerDirection();
+	}
+	checkPromotion(){
+		if(!this.isKing){
+			let dir = null;
+			switch(this.player.playerDirection){
+				case (0,1): dir = 'n'; break;
+				case (0,-1): dir = 's'; break;
+				case (1,0): dir = 'w'; break;
+				case (-1,0): dir = 'e'; break;
+			}
+			if (!this.tile[dir]) 
+				this.promote();
+		}
+	}
+	promote(){
+		this.isKing=true;
+		this.defaultAllowedMovement.push(['sw']);
+		this.defaultAllowedMovement.push(['se']);
+		this.rotateToPlayerDirection();
+		let newMesh = this.displayMesh.clone();
+		newMesh.translateZ(.125/4);
+		this.mesh.add(newMesh);
 	}
 }
 
@@ -81,13 +125,14 @@ class Checkers extends Game {
 		this.name = "Checkers";
 
 		//build board
+		let offset = null;
 		if (this.players.length==2){
 			this.buildBoard(8,8);
-			let offset = 0;
+			offset = 0;
 		}
 		else {
-			this.buildBoard(12,12);
-			let offset = 2;
+			this.buildBoard(14,14);
+			offset = 3;
 		}
 
 		//build pieces for each player
@@ -98,9 +143,9 @@ class Checkers extends Game {
 						let s = 1;
 						if (y%2==1)
 							s=2;
-						for (let x = s; x<10; x+=2){
+						for (let x = s; x<9; x+=2){
 							loadedMeshes[0].rotateZ( Math.random() * 2 * Math.PI );
-							let newToken = new Checker(this.players[playerIndex], this.board[x][y], loadedMeshes[0]);
+							let newToken = new Checker(this.players[playerIndex], this.board[x+offset][y], loadedMeshes[0]);
 							this.players[playerIndex].addToken(newToken);
 						}
 					}
@@ -110,13 +155,38 @@ class Checkers extends Game {
 						let s = 1;
 						if (y%2==1)
 							s=2;
-						for (let x = s; x<10; x+=2){
+						for (let x = s; x<9; x+=2){
 							loadedMeshes[0].rotateZ( Math.random() * 2 * Math.PI );
-							let newToken = new Checker(this.players[playerIndex], this.board[x][y], loadedMeshes[0]);
+							let newToken = new Checker(this.players[playerIndex], this.board[x+offset][y], loadedMeshes[0]);
 							this.players[playerIndex].addToken(newToken);
 						}
 					}
 					break;
+				case 2: 
+					for (let x = 1; x <= 3; x++){
+						let s = 1;
+						if (x%2==1)
+							s=2;
+						for (let y = s; y<9; y+=2){
+							loadedMeshes[0].rotateZ( Math.random() * 2 * Math.PI );
+							let newToken = new Checker(this.players[playerIndex], this.board[x][y+offset], loadedMeshes[0]);
+							this.players[playerIndex].addToken(newToken);
+						}
+					}
+					break;
+				case 3:
+					for (let x = this.board[0].length-1; x >= this.board[0].length-4; x--){
+						let s = 1;
+						if (x%2==1)
+							s=2;
+						for (let y = s; y<9; y+=2){
+							loadedMeshes[0].rotateZ( Math.random() * 2 * Math.PI );
+							let newToken = new Checker(this.players[playerIndex], this.board[x][y+offset], loadedMeshes[0]);
+							this.players[playerIndex].addToken(newToken);
+						}
+					}
+					break;
+				
 			}
 		}
 
@@ -140,5 +210,17 @@ class Checkers extends Game {
 	//this.players[0].tokens[0].moveTo(this.players[0].tokens[0].tile.e, 0xd409ef);
 	
 	this.startNextPlayerTurn();
+	}
+	checkVictory(){
+		let numPlayersOut = 0;
+		let winner = null;
+		this.players.forEach(player=>{
+			if (!player.tokens.length){
+				numPlayersOut++;
+			}
+			else winner=player;
+		});
+		if (numPlayersOut==this.players.length-1)
+			alert(`${winner.name} has won the game!`);
 	}
 }

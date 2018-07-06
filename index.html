@@ -7,15 +7,6 @@
 		<title>ThreeJS Board Game by Ryan Montgomery</title>
 	</head>
 
-	<style>
-		body { margin: 0; width: 100%; height: 100%; text-align: center; }
-	
-		.renderArea{ margin: 0; width: 100%; height: 100%; z-index: 0; position: absolute; top: 0px; left: 0px; }
-	</style>
-
-
-
-
 	<body>
 		<div id="renderArea"/>
 
@@ -34,6 +25,7 @@
 
 		<div id="mainMenu">
 			<div id="fieldContainer"></div>
+			<br><br><br>
 			<div id="numPlayerContainer">
 				<button id="addPlayer" class="changePlayers" onclick="numPlayers=updateInput(numPlayers+1)">+</button>
 				<button id="removePlayer" class="changePlayers" onclick="numPlayers=updateInput(numPlayers-1)">-</button>
@@ -44,9 +36,6 @@
 
 
 		<script>
-			let ra = document.getElementById('renderArea');
-			ra.style.width='0px';
-			ra.style.height='0px';
 
 			const makeField = (count) => {
 				let newInput = document.createElement('input');
@@ -91,8 +80,6 @@
 					let players = [];
 					for (let i =1; i<= numPlayers; i++)
 						players.push(document.getElementById('name'+i).value)
-					console.log(numPlayers)
-					console.log(players);
 					
 					document.getElementById('mainMenu').remove();
 					document.getElementById('renderArea').className='renderArea';
@@ -100,9 +87,6 @@
 					gameInstance = new Checkers(players);
 				} else console.log(loadedMeshes);
 			}
-
-		//setTimeout(function(){gameInstance = new Checkers(["Bob","Steve","Mary","jim"]);},250);
-		//setTimeout(function(){console.log(loadedMeshes)},5000);
 
 		</script>
 		</div>

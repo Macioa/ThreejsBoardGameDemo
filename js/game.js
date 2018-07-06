@@ -5,43 +5,54 @@ var scale = .25;
 //listener for token selection by touch
 const touchToken = (event) => {
 	event.preventDefault();
+	let rI = gameInstance.renderInstance;
 
-	mouse.x = ( event.touches[0].clientX / window.innerWidth ) * 2 - 1;
-	mouse.y = - ( event.touches[0].clientY / window.innerHeight ) * 2 + 1;
-	rayCast(mouse, selectableObjects);
+	if (event.touches[0]){
+		rI.mouse.x = ( event.touches[0].clientX / window.innerWidth ) * 2 - 1;
+		rI.mouse.y = - ( event.touches[0].clientY / window.innerHeight ) * 2 + 1;
+		rI.rayCast(rI.mouse, rI.selectableObjects);
+	} else return;
 	tokenListener();
 }
 
 //listener for tile selection by touch
 const touchTile = (event) => {
 	event.preventDefault();
+	let rI = gameInstance.renderInstance;
 
-	mouse.x = ( event.touches[0].clientX / window.innerWidth ) * 2 - 1;
-	mouse.y = - ( event.touches[0].clientY / window.innerHeight ) * 2 + 1;
-	rayCast(mouse, selectableObjects);
+	if (event.touches[0]){
+		rI.mouse.x = ( event.touches[0].clientX / window.innerWidth ) * 2 - 1;
+		rI.mouse.y = - ( event.touches[0].clientY / window.innerHeight ) * 2 + 1;
+		rI.rayCast(rI.mouse, rI.selectableObjects);
+	} else return;
 	tileListener();
 }
 
 //listener for token selection
 const tokenListener = () => {
-	if (INTERSECTED){
-		let fromToken = gameInstance.activePlayer.tokens.find(token=> token.displayMesh == INTERSECTED);
+	let rI = gameInstance.renderInstance;
+	rI.rayCast(rI.mouse, rI.selectableObjects);
+
+	if (rI.intersected){
+		let fromToken = gameInstance.activePlayer.tokens.find(token=> token.displayMesh == rI.intersected);
 		gameInstance.selectTile(fromToken,false,true);
 	}
 }
 
 //listener for tile selection
 const tileListener = () => {
-	if (INTERSECTED){
+	//console.log(gameInstance)
+	let intersected = gameInstance.renderInstance.intersected;
+	if (intersected){
 		//if player selects tile that selected token is already on, cancel move and return to previous state
-		if (INTERSECTED==gameInstance.selectedToken.tile.socket){
+		if (intersected==gameInstance.selectedToken.tile.socket){
 			gameInstance.selectToken(true);
 		}
 		else{
 		//else find parent tile and process move
 			let toTile = null;
 			for (let row of gameInstance.board){
-				let searchResult = row.find(tile=> tile.socket == INTERSECTED);
+				let searchResult = row.find(tile=> tile.socket == intersected);
 				if (searchResult)
 					toTile = searchResult;
 			}
@@ -56,6 +67,8 @@ const tileListener = () => {
 
 class Game {
 	constructor (playerNames, colorArray) {
+		//initialize renderer
+		this.renderInstance = new RenderInstance()
 		//initialize default values
 		this.board = []; //multidimensional array of Tile objects
 		//this.tokens = [];
@@ -123,7 +136,7 @@ class Game {
 				else 
 					color = 'black';
 
-				this.board[i][j] = new Tile(color, new THREE.Vector2(i,j), isBorder);
+				this.board[i][j] = new Tile(this, color, new THREE.Vector2(i,j), isBorder);
 				}
 			}
 
@@ -186,7 +199,7 @@ class Game {
 		//camera.rotateOnWorldAxis(new THREE.Vector3(0,0,1), Math.PI);
 		//camera.moveTo(this.activePlayer.cameraPosition, this.activePlayer.cameraRotation);
 		//controls.update();
-		camera = this.activePlayer.camera;
+		this.renderInstance.camera = this.activePlayer.camera;
 
 		this.selectToken(true);
 	}
@@ -219,15 +232,17 @@ class Game {
 
 		
 		//set selectable objects
-		selectableObjects = [];
-		playerTokens.forEach(token => { selectableObjects.push(token.displayMesh) });
+		this.renderInstance.selectableObjects = [];
+		playerTokens.forEach(token => { this.renderInstance.selectableObjects.push(token.displayMesh) });
 
 		//handle event listeners
 		document.removeEventListener('click', tileListener);
 		document.addEventListener('click', tokenListener);
 
 		document.removeEventListener('touchstart', touchTile);
+		document.removeEventListener('touchend', touchTile);
 		document.addEventListener('touchstart',touchToken);
+		document.addEventListener('touchend',touchToken);
 	}
 	
 	selectTile(fromToken, continueExistingMove=false, forceCapture=false){
@@ -239,11 +254,13 @@ class Game {
 		document.addEventListener('click', tileListener);
 
 		document.removeEventListener('touchstart', touchToken);
+		document.removeEventListener('touchend', touchToken);
 		document.addEventListener('touchstart', touchTile);
+		document.addEventListener('touchend', touchTile);
 
 		//store selected token and clear existing selectable objects
 		this.selectedToken = fromToken;
-		selectableObjects = [];
+		this.renderInstance.selectableObjects = [];
 		
 		//use getAvailableMoves function defined in child class to determine where the selected tile can move
 		let availableMoves = this.selectedToken.getAvailableMoves()
@@ -270,7 +287,7 @@ class Game {
 		for( let moveOption of availableMoves ){
 			moveOption['tile'].socketMaterial.opacity=0.5;
 			this.displayedMoves.push(moveOption['tile']);
-			selectableObjects.push(moveOption['tile'].socket);
+			this.renderInstance.selectableObjects.push(moveOption['tile'].socket);
 		}
 
 		if (!this.availableMoves.length)
@@ -315,7 +332,7 @@ class Player {
 
 		this.camera =  new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
 		this.camera.position.z = 2;
-		console.log(this.playerDirection)
+		//console.log(this.playerDirection)
 		switch (this.playerDirection){
 			case 'n': this.camera.position.y=-9*scale;
 						this.camera.rotation.x=(Math.PI/4); 
@@ -352,11 +369,12 @@ class Player {
 
 
 class Token {
-	constructor(name, player, startingPosition, geometry){
+	constructor(name, player, gameInstance, startingPosition, geometry){
 		//set default class values
 		this.name = name;
 		this.tile = startingPosition;
 		this.player = player;
+		this.gameInstance=gameInstance;
 		this.defaultAllowedMovement = [];
 		this.allowedMovement = this.defaultAlloweMovement;
 		this.position = startingPosition;
@@ -371,10 +389,10 @@ class Token {
 		
 		//add display mesh to parent and add parent to scene
 		this.mesh.add(this.displayMesh);
-		scene.add(this.mesh);
+		this.gameInstance.renderInstance.scene.add(this.mesh);
 		
 		//move to starting tile location
-		setTimeout(this.moveTo(this.tile),500);
+		this.moveTo(this.tile);
 	}
 	constructMesh(geometry){
 		this.displayMesh = new THREE.Mesh(   geometry.clone() , this.displayMaterial  );
@@ -417,7 +435,7 @@ class Token {
 		//remove this token from player's inventory and game board
 		this.player.tokens = this.player.tokens.filter(token=> token!=this);
 		this.tile.isOpen=true;
-		scene.remove(this.mesh);
+		this.gameInstance.renderInstance.scene.remove(this.mesh);
 		console.log(`${gameInstance.activePlayer.name} took ${this.player.name}'s ${this.name}.`)
 	}
 
@@ -471,8 +489,9 @@ class Token {
 
 
 class Tile {
-	constructor(color,position,border = false) {
+	constructor(gameInstance, color,position,border = false) {
 		//set default values for new tile
+		this.gameInstance=gameInstance;
 		this.color = color;
 		this.position = position;
 
@@ -526,7 +545,7 @@ class Tile {
 		}
 
 		//add tile to scene
-		scene.add(this.obj);
+		this.gameInstance.renderInstance.scene.add(this.obj);
 
 		//move tile into position
 		this.obj.translateX(this.position.x*scale);

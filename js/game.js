@@ -92,10 +92,10 @@ class Game {
 		for (let i =0; i<playerNames.length; i++){
 			let direction = null;
 			switch (i){
-				case 0: direction = (0,1);		break;
-				case 1: direction = (0,-1);		break;
-				case 2: direction = (1,0);		break;
-				case 3: direction = (-1,0);		break;
+				case 0: direction = 'n';		break;
+				case 1: direction = 's';		break;
+				case 2: direction = 'e';		break;
+				case 3: direction = 'w';		break;
 			}
 			//console.log(`building ${playerNames[i]} with ${colorArray[i]} color and ${direction} direction`)
 			this.players.push(new Player(playerNames[i], colorArray[i], direction));
@@ -317,24 +317,24 @@ class Player {
 		this.camera.position.z = 2;
 		console.log(this.playerDirection)
 		switch (this.playerDirection){
-			case (0,1): this.camera.position.y=-8*scale;
+			case 'n': this.camera.position.y=-9*scale;
 						this.camera.rotation.x=(Math.PI/4); 
 						//this.cameraPosition = new THREE.Vector3(0.0, -8*scale, 2);
 						//this.cameraRotation = new THREE.Vector3(Math.PI/4, 0.0, 0.0);
 						break;
-			case (0,-1): this.camera.position.y=8*scale; 
+			case 's': this.camera.position.y=9*scale; 
 						this.camera.rotation.x=(-Math.PI/4); 
 						this.camera.rotation.z=(Math.PI);
 						//this.cameraPosition = new THREE.Vector3(0.0, 8*scale, 2);
 						//this.cameraRotation = new THREE.Vector3( Math.PI/4, 0.0, Math.PI/2 );
 						break;
-			case (1,0): this.camera.position.x=-8*scale; 
+			case 'e': this.camera.position.x=-9*scale; 
 						this.camera.rotation.y=(-Math.PI/4); 
 						this.camera.rotation.z=(-Math.PI/2);
 						break;
-			case (-1,0): this.camera.position.x=8*scale; 
+			case 'w': this.camera.position.x=9*scale; 
 						this.camera.rotation.y=(Math.PI/4); 
-						//this.camera.rotation.z=(-Math.PI/2);
+						this.camera.rotation.z=(Math.PI/2);
 						break;
 		}
 
@@ -425,10 +425,10 @@ class Token {
 	rotateToPlayerDirection(){
 		let rotations = 0;
 		switch(this.player.playerDirection){
-			case (0,1): rotations=0; break;
-			case (1,0): rotations=1; break;
-			case (0,-1): rotations=2; break;
-			case (-1,0): rotations=3; break;
+			case 'n': rotations=0; break;
+			case 'e': rotations=1; break;
+			case 's': rotations=2; break;
+			case 'w': rotations=3; break;
 		}
 
 		this.allowedMovement = this.defaultAllowedMovement

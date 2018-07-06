@@ -95,10 +95,10 @@ class Checker extends CheckerPiece {//Define specific token. In checkers, this e
 		if(!this.isKing){
 			let dir = null;
 			switch(this.player.playerDirection){
-				case (0,1): dir = 'n'; break;
-				case (0,-1): dir = 's'; break;
-				case (1,0): dir = 'w'; break;
-				case (-1,0): dir = 'e'; break;
+				case 'n': dir = 'n'; break;
+				case 's': dir = 's'; break;
+				case 'e': dir = 'w'; break;
+				case 'w': dir = 'e'; break;
 			}
 			if (!this.tile[dir]) 
 				this.promote();

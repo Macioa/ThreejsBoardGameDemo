@@ -3,7 +3,7 @@
 <html>
 	<head>
 		<meta charset=utf-8>
-		<link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+		<link rel="stylesheet" type="text/css" media="screen" href="style.css" />
 		<title>ThreeJS Board Game by Ryan Montgomery</title>
 	</head>
 
@@ -12,13 +12,15 @@
 		canvas { width: 100%; height: 100% }
 		#renderArea{ margin: 0; width: 100%; height: 100%; z-index: 0; position: absolute; top: 0px; left: 0px; }
 	</style>
+
+
+
+
 	<body>
 		<div id="renderArea"/>
 
 
-		<div>
 		<script src="js/threejs/three.min.js"></script>
-
 		<script src="js/threejs/STLLoader.js"></script>
 		<script src="js/threejs/OrbitControls.js"></script>
 		
@@ -27,9 +29,74 @@
 		<script src="js/game.js"></script>
 		<script src="js/checkers.js"></script>
 
-		<script>
 
-		setTimeout(function(){gameInstance = new Checkers(["Bob","Steve","Mary","jim"]);},250);
+
+
+		<div id="mainMenu">
+			<div id="fieldContainer"></div>
+			<div id="numPlayerContainer">
+				<button id="addPlayer" class="changePlayers" onclick="numPlayers=updateInput(numPlayers+1)">+</button>
+				<button id="removePlayer" class="changePlayers" onclick="numPlayers=updateInput(numPlayers-1)">-</button>
+			</div>
+			<br><br>
+			<button id="startGame" onclick="startGame()">Play Checkers</button>
+		</div>
+
+
+		<script>
+			const makeField = (count) => {
+				let newInput = document.createElement('input');
+				newInput.className = "nameField";
+				newInput.type="text";
+				newInput.id="name"+count;
+				newInput.value="Player "+count;
+				document.getElementById('fieldContainer').append(newInput);
+			}
+			const updateInput = (numPlay) =>
+			{
+				let add = document.getElementById('addPlayer');
+				let remove = document.getElementById('removePlayer');
+
+				if (numPlay<=2){
+					numPlay=2;
+					remove.disabled=true;
+				} else remove.disabled=false;
+				if (numPlay>4){
+					numPlay=4;
+					add.disabled=true;
+				}else add.disabled=false;
+
+				for (let i = 1; i<=4; i++){
+					let field = document.getElementById('name'+i);
+					if ( (!field)  &&  (i<=numPlay) ){
+						makeField(i);
+					}
+					if ( (field)  &&  (i>numPlay) )
+						field.remove();
+				}
+				console.log(numPlay)
+				return numPlay;
+			}
+
+			let numPlayers=2;
+			updateInput(numPlayers);
+			var gameInstance;
+
+			const startGame = () =>{
+				if (loadedMeshes.length){
+					let players = [];
+					for (let i =1; i<= numPlayers; i++)
+						players.push(document.getElementById('name'+i).value)
+					console.log(numPlayers)
+					console.log(players);
+					
+					document.getElementById('mainMenu').remove();
+
+					gameInstance = new Checkers(players);
+				} else console.log(loadedMeshes);
+			}
+
+		//setTimeout(function(){gameInstance = new Checkers(["Bob","Steve","Mary","jim"]);},250);
 		//setTimeout(function(){console.log(loadedMeshes)},5000);
 
 		</script>

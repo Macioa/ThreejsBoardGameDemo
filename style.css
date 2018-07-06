@@ -1,0 +1,24 @@
+.namefield{
+    display: block;
+    text-align: center;
+}
+#mainMenu{
+    top:300px;
+    text-align: center;
+    display: inline-block;
+    margin: auto;
+    position: absolute;
+}
+#fieldContainer{
+    text-align: center;
+    display: inline-block;
+    margin: auto;
+}
+button{
+    border-radius: 10px;
+    padding:10px;
+}
+.changePlayers{
+    width: 60px;
+    text-align: center;
+}

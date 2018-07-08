@@ -20,6 +20,7 @@ class RenderInstance {
 		this.init();
 		animate(this);
 	}
+
 	init() {
 		let me = this;
 		this.camera = camera
@@ -78,6 +79,7 @@ class RenderInstance {
 		}
 		return this.intersected;
 	}
+	
 	resizeRender(){
 		let width = window.innerWidth;
 		let height = window.innerHeight;

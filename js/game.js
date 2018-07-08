@@ -439,7 +439,7 @@ class Token {
 		console.log(`${gameInstance.activePlayer.name} took ${this.player.name}'s ${this.name}.`)
 	}
 
-
+	
 	rotateToPlayerDirection(){
 		let rotations = 0;
 		switch(this.player.playerDirection){

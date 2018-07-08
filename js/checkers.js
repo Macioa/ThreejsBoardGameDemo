@@ -11,9 +11,11 @@ loader.load( './mesh/CheckerSmall.stl', function ( geometry ) {
 
 //Define child class for game tokens. Behavior defined here applies to all tokens in game
 class CheckerPiece extends Token {
+
 	constructor(name, player, gameInstance, startingTile, geometry) {
 		super(name, player, gameInstance, startingTile, geometry);
 	}
+
 	getAvailableMoves(){//find available moves in present state for this token. This has to be in child class, because behavior is different for each game.
 		let canMoveTo = [];
 		canMoveTo.push({'tile' : this.tile, 'captured' : []});
@@ -71,12 +73,14 @@ class Checker extends CheckerPiece {//Define specific token. In checkers, this e
 		//rotate piece and available movement to match player direction
 		this.rotateToPlayerDirection();
 	}
+	
 	checkPromotion(){
 		if(!this.isKing){
 			if (!this.tile[this.player.playerDirection]) 
 				this.promote();
 		}
 	}
+
 	promote(){
 		this.isKing=true;
 		this.defaultAllowedMovement.push(['sw']);
@@ -166,6 +170,7 @@ class Checkers extends Game {
 
 	this.startNextPlayerTurn();
 	}
+
 	checkVictory(){
 		let numPlayersOut = 0;
 		let winner = null;
